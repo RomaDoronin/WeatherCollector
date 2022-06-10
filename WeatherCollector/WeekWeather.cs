@@ -36,6 +36,20 @@ namespace WeatherCollector
             }
             week[dayIndex] = day;
         }
+
+        public void SetPrecipitation(double precipitation, int dayIndex, bool isDay)
+        {
+            DayWeather day = week[dayIndex];
+            if (isDay)
+            {
+                day.dayWeather.precipitation = precipitation;
+            }
+            else
+            {
+                day.nightWeather.precipitation = precipitation;
+            }
+            week[dayIndex] = day;
+        }
     }
 
     struct DayWeather

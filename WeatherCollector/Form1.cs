@@ -3,6 +3,13 @@ using System.Text;
 
 namespace WeatherCollector
 {
+    enum FindState
+    {
+        NotFind,
+        Finding,
+        Found
+    }
+
     public partial class Form1 : Form
     {
         private WeekWeather weekWeather = new WeekWeather();
@@ -53,46 +60,82 @@ namespace WeatherCollector
             outputLabel.Text += s;
         }
 
-        private bool precipitationIsFilled = false;
-
-        private bool findDayPrecipitation = false;
-
         private void ParseHtmlString(string source)
         {
             FindTemperature(source);
-
-            //for (int i = 0; i < source.Length - 3; i++)
-            //{
-            //    if (CollectSubstring("Осадки, мм (вероятность)", source, i))
-            //    {
-            //        if (!findDayPrecipitation)
-            //        {
-            //            findDayPrecipitation = true;
-            //        }
-            //    } else if (findDayPrecipitation)
-            //    {
-            //        FindPrecipitation(source, i);
-            //    }
-            //}
+            FindPrecipitation(source);
             Console.WriteLine("Check");
         }
 
-        private void FindPrecipitation(string source, int index)
+        private void FindPrecipitation(string source)
         {
-            if (CollectSubstring("<nobr>", source, index))
-            {
-                int startIndex = index + 6;
-                string stringPrecipitation = "";
-                char ch = source[startIndex];
-                int count = 0;
-                while (ch != '<')
-                {
-                    stringPrecipitation += ch;
-                    count++;
-                    ch = source[startIndex + count];
-                }
+            var key = "Осадки, мм (вероятность)";
+            var findDayPrecipitation = FindState.NotFind;
+            var findNightPrecipitation = FindState.NotFind;
+            int dayCount = 0;
 
-                double precipitation = Convert.ToDouble(stringPrecipitation);
+            for (int i = 0; i < source.Length - key.Length; i++)
+            {
+                if (findDayPrecipitation == FindState.Finding || findNightPrecipitation == FindState.Finding)
+                {
+                    var nobrKey = "<nobr>";
+                    if (CollectSubstring(nobrKey, source, i))
+                    {
+                        int startIndex = i + nobrKey.Length;
+                        string stringPrecipitation = "";
+                        char ch = source[startIndex];
+                        int count = 0;
+                        while (ch != '<' && ch != ')')
+                        {
+                            stringPrecipitation += ch;
+                            count++;
+                            ch = source[startIndex + count];
+                        }
+
+                        if (stringPrecipitation.EndsWith('%'))
+                        {
+                            var probability = stringPrecipitation; // !
+                            continue;
+                        }
+                        else
+                        {
+                            double precipitation = Convert.ToDouble(stringPrecipitation.Replace('.', ','));
+                            if (findDayPrecipitation == FindState.Finding)
+                            {
+                                weekWeather.SetPrecipitation(precipitation, dayCount, true);
+                            }
+                            else if (findNightPrecipitation == FindState.Finding)
+                            {
+                                weekWeather.SetPrecipitation(precipitation, dayCount, false);
+                            }
+                            if (dayCount == 6)
+                            {
+                                if (findDayPrecipitation == FindState.Finding)
+                                {
+                                    findDayPrecipitation = FindState.Found;
+                                }
+                                else if (findNightPrecipitation == FindState.Finding)
+                                {
+                                    findNightPrecipitation = FindState.Found;
+                                }
+                                dayCount = 0;
+                                continue;
+                            }
+                            dayCount++;
+                        }
+                    }
+                }
+                else if (CollectSubstring(key, source, i))
+                {
+                    if (findDayPrecipitation == FindState.NotFind)
+                    {
+                        findDayPrecipitation = FindState.Finding;
+                    }
+                    if (findDayPrecipitation == FindState.Found && findNightPrecipitation == FindState.NotFind)
+                    {
+                        findNightPrecipitation = FindState.Finding;
+                    }
+                }
             }
         }
 
