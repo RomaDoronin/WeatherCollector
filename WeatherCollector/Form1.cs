@@ -3,51 +3,6 @@ using System.Text;
 
 namespace WeatherCollector
 {
-
-    struct WeekWeather
-    {
-        public List<DayWeather> week;
-
-        public WeekWeather()
-        {
-            week = new List<DayWeather>();
-        }
-    }
-
-    struct DayWeather
-    {
-        public int day;
-        public int month;
-        public Weather nightWeather;
-        public Weather dayWeather;
-
-    }
-
-    struct Weather
-    {
-        public int temperature;
-        public double precipitation; // Осадки
-        public Wind wind;
-    }
-
-    struct Wind
-    {
-        public int speed;
-        public WindDirection windDirection;
-    }
-
-    enum WindDirection
-    {
-        North,
-        NorthEast,
-        East,
-        SouthEast,
-        South,
-        SouthWest,
-        West,
-        NorthWest
-    }
-
     public partial class Form1 : Form
     {
         private WeekWeather weekWeather = new WeekWeather();
@@ -98,69 +53,106 @@ namespace WeatherCollector
             outputLabel.Text += s;
         }
 
-        private int dayCount = 0;
-        private DayWeather dayWeather = new DayWeather();
-        private bool day = true;
-        private bool temperatureIsFilled = false;
+        private bool precipitationIsFilled = false;
 
-        private void ParseHtmlString(string str)
+        private bool findDayPrecipitation = false;
+
+        private void ParseHtmlString(string source)
         {
-            for (int i = 0; i < str.Length - 3; i++)
-            {
-                char str0 = str[i];
-                char str1 = str[i + 1];
-                char str2 = str[i + 2];
-                char str3 = str[i + 3];
+            FindTemperature(source);
 
-                if (str0 == '&' && str1 == 'd' && str2 == 'e' && str3 == 'g')
-                {
-                    if (!temperatureIsFilled)
-                    {
-                        FindTemperature(str, i);
-                    }
-                }
-            }
+            //for (int i = 0; i < source.Length - 3; i++)
+            //{
+            //    if (CollectSubstring("Осадки, мм (вероятность)", source, i))
+            //    {
+            //        if (!findDayPrecipitation)
+            //        {
+            //            findDayPrecipitation = true;
+            //        }
+            //    } else if (findDayPrecipitation)
+            //    {
+            //        FindPrecipitation(source, i);
+            //    }
+            //}
             Console.WriteLine("Check");
         }
 
-        private void FindTemperature(string source, int ampersandPosition)
+        private void FindPrecipitation(string source, int index)
         {
-            int temperature = 0;
-            int count = 1;
-            char ch = source[ampersandPosition - count];
-
-            while (ch != '>')
+            if (CollectSubstring("<nobr>", source, index))
             {
-                int mult = 10 * (count - 1);
-                if (mult == 0)
+                int startIndex = index + 6;
+                string stringPrecipitation = "";
+                char ch = source[startIndex];
+                int count = 0;
+                while (ch != '<')
                 {
-                    mult = 1;
+                    stringPrecipitation += ch;
+                    count++;
+                    ch = source[startIndex + count];
                 }
-                temperature += (ch - '0') * mult;
-                count++;
-                ch = source[ampersandPosition - count];
-            }
 
-            if (day)
-            {
-                dayWeather.dayWeather.temperature = temperature;
-                day = false;
-
-                if (dayCount == 6)
-                {
-                    weekWeather.week.Add(dayWeather);
-                    temperatureIsFilled = true;
-                }
-            }
-            else
-            {
-                dayWeather.nightWeather.temperature = temperature;
-                day = true;
-                dayCount++;
-                weekWeather.week.Add(dayWeather);
-                dayWeather = new DayWeather();
+                double precipitation = Convert.ToDouble(stringPrecipitation);
             }
         }
 
+        private bool CollectSubstring(string substring, string source, int index)
+        {
+            for (int i = 0; i < substring.Length; i++)
+            {
+                if (source[index + i] != substring[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private void FindTemperature(string source)
+        {
+            string key = "&deg";
+            int dayCount = 0;
+            bool isDay = true;
+
+            for (int i = 0; i < source.Length - key.Length; i++)
+            {
+                if (CollectSubstring(key, source, i))
+                {
+                    int ampersandPosition = i;
+                    int temperature = 0;
+                    int count = 1;
+                    char ch = source[ampersandPosition - count];
+
+                    while (ch != '>')
+                    {
+                        int mult = 10 * (count - 1);
+                        if (mult == 0)
+                        {
+                            mult = 1;
+                        }
+                        temperature += (ch - '0') * mult;
+                        count++;
+                        ch = source[ampersandPosition - count];
+                    }
+
+                    if (isDay)
+                    {
+                        weekWeather.SetTemperature(temperature, dayCount, isDay);
+
+                        if (dayCount == 6)
+                        {
+                            break;
+                        }
+                        isDay = false;
+                    }
+                    else
+                    {
+                        weekWeather.SetTemperature(temperature, dayCount, isDay);
+                        dayCount++;
+                        isDay = true;
+                    }
+                }
+            }
+        }
     }
 }
