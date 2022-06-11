@@ -23,7 +23,7 @@ namespace WeatherCollector
             }
         }
 
-        public void SetTemperature(int temperature, int dayIndex, bool isDay)
+        public void SetTemperature(string temperature, int dayIndex, bool isDay)
         {
             DayWeather day = week[dayIndex];
             if (isDay)
@@ -37,7 +37,7 @@ namespace WeatherCollector
             week[dayIndex] = day;
         }
 
-        public void SetPrecipitation(double precipitation, int dayIndex, bool isDay)
+        public void SetPrecipitation(string precipitation, int dayIndex, bool isDay)
         {
             DayWeather day = week[dayIndex];
             if (isDay)
@@ -49,6 +49,59 @@ namespace WeatherCollector
                 day.nightWeather.precipitation = precipitation;
             }
             week[dayIndex] = day;
+        }
+
+        public void SetWindDirection(string windDirection, int dayIndex, bool isDay)
+        {
+            DayWeather day = week[dayIndex];
+            if (isDay)
+            {
+                day.dayWeather.wind.windDirection = ParseStringToWindDirection(windDirection);
+            }
+            else
+            {
+                day.nightWeather.wind.windDirection = ParseStringToWindDirection(windDirection);
+            }
+            week[dayIndex] = day;
+        }
+
+        public void SetWindSpeed(int windSpeed, int dayIndex, bool isDay)
+        {
+            DayWeather day = week[dayIndex];
+            if (isDay)
+            {
+                day.dayWeather.wind.speed = windSpeed;
+            }
+            else
+            {
+                day.nightWeather.wind.speed = windSpeed;
+            }
+            week[dayIndex] = day;
+        }
+
+        private static WindDirection ParseStringToWindDirection(string windDirection)
+        {
+            switch (windDirection)
+            {
+                case "С":
+                    return WindDirection.North;
+                case "С-З":
+                    return WindDirection.NorthWest;
+                case "З":
+                    return WindDirection.West;
+                case "Ю-З":
+                    return WindDirection.SouthWest;
+                case "Ю":
+                    return WindDirection.South;
+                case "Ю-В":
+                    return WindDirection.SouthEast;
+                case "В":
+                    return WindDirection.East;
+                case "С-В":
+                    return WindDirection.NorthEast;
+                default:
+                    return WindDirection.North;
+            }
         }
     }
 
@@ -70,8 +123,8 @@ namespace WeatherCollector
 
     struct Weather
     {
-        public int? temperature;
-        public double? precipitation; // Осадки
+        public string? temperature;
+        public string? precipitation; // Осадки
         public Wind wind;
 
         public Weather()
@@ -91,6 +144,39 @@ namespace WeatherCollector
         {
             speed = null;
             windDirection = null;
+        }
+
+        public string GetWindData()
+        {
+            var result = "";
+            switch (windDirection)
+            {
+                case WindDirection.North:
+                    result += "С";
+                    break;
+                case WindDirection.NorthEast:
+                    result += "СВ";
+                    break;
+                case WindDirection.East:
+                    result += "В";
+                    break;
+                case WindDirection.SouthEast:
+                    result += "ЮВ";
+                    break;
+                case WindDirection.South:
+                    result += "Ю";
+                    break;
+                case WindDirection.SouthWest:
+                    result += "ЮЗ";
+                    break;
+                case WindDirection.West:
+                    result += "ЮВ";
+                    break;
+                case WindDirection.NorthWest:
+                    result += "СВ";
+                    break;
+            }
+            return result += "-" + speed;
         }
     }
 

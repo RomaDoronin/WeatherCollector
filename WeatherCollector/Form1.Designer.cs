@@ -29,12 +29,13 @@
         private void InitializeComponent()
         {
             this.button1 = new System.Windows.Forms.Button();
-            this.outputLabel = new System.Windows.Forms.Label();
+            this.progressBar = new System.Windows.Forms.ProgressBar();
+            this.button2 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(302, 149);
+            this.button1.Location = new System.Drawing.Point(178, 155);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(256, 88);
             this.button1.TabIndex = 0;
@@ -42,33 +43,42 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // outputLabel
+            // progressBar
             // 
-            this.outputLabel.AutoSize = true;
-            this.outputLabel.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.outputLabel.Location = new System.Drawing.Point(12, 291);
-            this.outputLabel.Name = "outputLabel";
-            this.outputLabel.Size = new System.Drawing.Size(54, 20);
-            this.outputLabel.TabIndex = 1;
-            this.outputLabel.Text = "Вывод";
+            this.progressBar.Location = new System.Drawing.Point(12, 431);
+            this.progressBar.Name = "progressBar";
+            this.progressBar.Size = new System.Drawing.Size(874, 29);
+            this.progressBar.TabIndex = 1;
+            // 
+            // button2
+            // 
+            this.button2.Enabled = false;
+            this.button2.Location = new System.Drawing.Point(440, 155);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(256, 88);
+            this.button2.TabIndex = 2;
+            this.button2.Text = "Скачать таблицу";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(898, 472);
-            this.Controls.Add(this.outputLabel);
+            this.Controls.Add(this.button2);
+            this.Controls.Add(this.progressBar);
             this.Controls.Add(this.button1);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Собиратель Погоды 1.0.0";
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
         private Button button1;
-        private Label outputLabel;
+        private ProgressBar progressBar;
+        private Button button2;
     }
 }
