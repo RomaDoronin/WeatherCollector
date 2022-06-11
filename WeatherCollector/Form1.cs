@@ -12,11 +12,52 @@ namespace WeatherCollector
 
     public partial class Form1 : Form
     {
-        private WeekWeather weekWeather = new WeekWeather();
+        private List<String> stationList = new List<String>()
+        {
+            "arzamas",
+            "vetluga",
+            "voskresenskoe",
+            "vyksa",
+            "volzskaja-gmo",
+            "krasnye-baki",
+            "lukojanov",
+            "lyskovo",
+            "niznij-novgoro",
+            "pavlovo",
+            "sergac",
+            "sakunja"
+        };
+
+        private Dictionary<String, String> stationDict = new Dictionary<String, String>()
+        {
+            { "arzamas", "Арзамас" },
+            { "vetluga", "Ветлуга" },
+            { "voskresenskoe", "Воскресенское" },
+            { "vyksa", "Выкса" },
+            { "volzskaja-gmo", "Городец Волжская ГМО" },
+            { "krasnye-baki", "Красные баки" },
+            { "lukojanov", "Лукоянов" },
+            { "lyskovo", "Лысково" },
+            { "niznij-novgoro", "Нижний Новгород I" },
+            { "pavlovo", "Павлово" },
+            { "sergac", "Сергач" },
+            { "sakunja", "Шахунья" }
+        };
+
+        enum StatinEnum
+        {
+            arzamas
+        }
+
+        private Dictionary<String, WeekWeather> weatherDict;
+
+        private WeekWeather currentWeekWeather;
 
         public Form1()
         {
             InitializeComponent();
+
+            weatherDict = new Dictionary<String, WeekWeather>();
         }
 
         public delegate void MyDelegate(int value);
@@ -25,10 +66,15 @@ namespace WeatherCollector
             this.progressBar.Value = value;
         }
 
+        private int progressCount = 0;
+
         private void button1_Click(object sender, EventArgs e)
         {
             button1.Enabled = false;
-            SendRequestForWeather();
+            foreach (var station in stationList)
+            {
+                SendRequestForWeather(station);
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -39,31 +85,43 @@ namespace WeatherCollector
         private void CreateDoc()
         {
             CreateExcelDoc excelApp = new CreateExcelDoc();
+            MergeNeededCell(excelApp);
+            for (var stationCount = 0; stationCount < stationList.Count; stationCount++)
+            {
+                FillDoc(excelApp, stationCount);
+            }
+        }
 
-            var temperatureRow = 4;
+        private void FillDoc(CreateExcelDoc excelApp, int stationCount)
+        {
+            var stationKey = stationList[stationCount];
+            var weekWeather = weatherDict[stationKey];
+
+            var temperatureRow = 4 + stationCount * 3;
             excelApp.AddData(3, temperatureRow, "t°C");
-            var precipitationRow = 5;
+            var precipitationRow = 5 + stationCount * 3;
             excelApp.AddData(3, precipitationRow, "Осадки");
-            var windRow = 6;
+            var windRow = 6 + stationCount * 3;
             excelApp.AddData(3, windRow, "Ветер");
             var colStart = 4;
 
-            MergeNeededCell(excelApp);
+            excelApp.AddData(2, temperatureRow, stationDict[stationKey]);
 
             for (var dayCount = 0; dayCount < 5; dayCount++)
             {
                 var currentDay = weekWeather.week[dayCount + 1];
 
-                // Настройка заголовков
-                var date = currentDay.month + "/" + currentDay.day;
-                var dateCol = colStart + dayCount * 2;
-                var dayCol = colStart + dayCount * 2;
-                var nightCol = colStart + dayCount * 2 + 1;
-
-                excelApp.AddData(dateCol, 2, date);
-
-                excelApp.AddData(dayCol, 3, "День");
-                excelApp.AddData(nightCol, 3, "Ночь");
+                var dayCol = colStart + dayCount * 2 + 1;
+                var nightCol = colStart + dayCount * 2;
+                if (stationCount == 0)
+                {
+                    // Настройка заголовков
+                    var date = currentDay.month + "/" + currentDay.day;
+                    var dateCol = colStart + dayCount * 2;
+                    excelApp.AddData(dateCol, 2, date);
+                    excelApp.AddData(dayCol, 3, "День");
+                    excelApp.AddData(nightCol, 3, "Ночь");
+                }
 
                 // Занесение данных о погоде
                 excelApp.AddData(dayCol, temperatureRow, currentDay.dayWeather.temperature);
@@ -77,9 +135,8 @@ namespace WeatherCollector
             }
         }
 
-        private void MergeNeededCell(CreateExcelDoc excelApp)
+        private static void MergeNeededCell(CreateExcelDoc excelApp)
         {
-            excelApp.Merge("C2", "C3");
             excelApp.Merge("D2", "E2");
             excelApp.Merge("F2", "G2");
             excelApp.Merge("H2", "I2");
@@ -87,9 +144,10 @@ namespace WeatherCollector
             excelApp.Merge("L2", "M2");
         }
 
-        private void SendRequestForWeather()
+        private void SendRequestForWeather(string station)
         {
-            String url = "https://meteoinfo.ru/forecasts5000/russia/nizhegorodskaya-area";
+            String url = "https://meteoinfo.ru/forecasts5000/russia/nizhegorodskaya-area/" + station;
+
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
@@ -107,7 +165,7 @@ namespace WeatherCollector
                 StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8);
 
                 var str = readStream.ReadToEnd();
-                ParseHtmlString(str);
+                ParseHtmlString(str, station);
                 readStream.Close();
             }
             else if (response.StatusCode == HttpStatusCode.NotFound)
@@ -117,29 +175,24 @@ namespace WeatherCollector
             response.Close();
         }
 
-        private void ParseHtmlString(string source)
+        private void ParseHtmlString(string source, string station)
         {
-            progressBar.BeginInvoke(new MyDelegate(DelegateMethod), 0);
+            currentWeekWeather = new WeekWeather();
 
             FindTemperature(source);
-
-            progressBar.BeginInvoke(new MyDelegate(DelegateMethod), 25);
-
             FindPrecipitation(source);
-
-            progressBar.BeginInvoke(new MyDelegate(DelegateMethod), 50);
-
             FindWindDirection(source);
-
-            progressBar.BeginInvoke(new MyDelegate(DelegateMethod), 75);
-
             FindWindSpeed(source);
 
-            progressBar.BeginInvoke(new MyDelegate(DelegateMethod), 100);
+            weatherDict[station] = currentWeekWeather;
 
-            button2.Enabled = true;
-
-            Console.WriteLine("Check");
+            progressCount += 10;
+            progressBar.BeginInvoke(new MyDelegate(DelegateMethod), progressCount);
+            if (progressCount == 120)
+            {
+                button2.Enabled = true;
+                Console.WriteLine("Check");
+            }
         }
 
         private void FindWindSpeed(string source)
@@ -170,11 +223,11 @@ namespace WeatherCollector
 
                         if (findDayWind == FindState.Finding)
                         {
-                            weekWeather.SetWindSpeed(windSpeed, dayCount, true);
+                            currentWeekWeather.SetWindSpeed(windSpeed, dayCount, true);
                         }
                         else if (findNightWind == FindState.Finding)
                         {
-                            weekWeather.SetWindSpeed(windSpeed, dayCount, false);
+                            currentWeekWeather.SetWindSpeed(windSpeed, dayCount, false);
                         }
                         if (dayCount == 6)
                         {
@@ -233,11 +286,11 @@ namespace WeatherCollector
 
                         if (findDayWind == FindState.Finding)
                         {
-                            weekWeather.SetWindDirection(stringWind, dayCount, true);
+                            currentWeekWeather.SetWindDirection(stringWind, dayCount, true);
                         }
                         else if (findNightWind == FindState.Finding)
                         {
-                            weekWeather.SetWindDirection(stringWind, dayCount, false);
+                            currentWeekWeather.SetWindDirection(stringWind, dayCount, false);
                         }
                         if (dayCount == 6)
                         {
@@ -303,11 +356,11 @@ namespace WeatherCollector
                         {
                             if (findDayPrecipitation == FindState.Finding)
                             {
-                                weekWeather.SetPrecipitation(precipitation, dayCount, true);
+                                currentWeekWeather.SetPrecipitation(precipitation, dayCount, true);
                             }
                             else if (findNightPrecipitation == FindState.Finding)
                             {
-                                weekWeather.SetPrecipitation(precipitation, dayCount, false);
+                                currentWeekWeather.SetPrecipitation(precipitation, dayCount, false);
                             }
                             if (dayCount == 6)
                             {
@@ -365,7 +418,7 @@ namespace WeatherCollector
 
                     if (isDay)
                     {
-                        weekWeather.SetTemperature(temperature, dayCount, isDay);
+                        currentWeekWeather.SetTemperature(temperature, dayCount, isDay);
                         dayCount++;
                         isDay = false;
                     }
@@ -375,7 +428,7 @@ namespace WeatherCollector
                         {
                             break;
                         }
-                        weekWeather.SetTemperature(temperature, dayCount, isDay);
+                        currentWeekWeather.SetTemperature(temperature, dayCount, isDay);
                         isDay = true;
                     }
                 }
