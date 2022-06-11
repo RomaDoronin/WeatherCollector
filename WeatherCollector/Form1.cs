@@ -82,6 +82,11 @@ namespace WeatherCollector
             CreateDoc();
         }
 
+        private void button3_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("В случае возникновения вопросов обращаться по адресу:\n\nroman.doronin.sklexp@yandex.ru\n\nСсылка на исходный код:\n\nhttps://github.com/RomaDoronin/WeatherCollector", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
         private void CreateDoc()
         {
             CreateExcelDoc excelApp = new CreateExcelDoc();
@@ -446,5 +451,6 @@ namespace WeatherCollector
             }
             return true;
         }
+
     }
 }
