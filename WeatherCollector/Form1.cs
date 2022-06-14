@@ -44,11 +44,6 @@ namespace WeatherCollector
             { "sakunja", "Шахунья" }
         };
 
-        enum StatinEnum
-        {
-            arzamas
-        }
-
         private Dictionary<String, WeekWeather> weatherDict;
 
         private WeekWeather currentWeekWeather;
