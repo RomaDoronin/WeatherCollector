@@ -12,7 +12,7 @@ namespace WeatherCollector
         private Excel.Application app = null;
         private Excel.Workbook workbook = null;
         private Excel.Worksheet worksheet = null;
-        private Excel.Range workSheet_range = null;
+        private Excel.Range workSheet_range = null; 
 
         public CreateExcelDoc()
         {

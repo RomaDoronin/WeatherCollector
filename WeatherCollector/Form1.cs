@@ -55,10 +55,16 @@ namespace WeatherCollector
             weatherDict = new Dictionary<String, WeekWeather>();
         }
 
-        public delegate void MyDelegate(int value);
+        public delegate void MyIntDelegate(int value);
+        public delegate void MyBoolDelegate(bool value);
         public void DelegateMethod(int value)
         {
             this.progressBar.Value = value;
+        }
+
+        public void DelegateMethodButton2(bool value)
+        {
+            this.button2.Enabled = value;
         }
 
         private int progressCount = 0;
@@ -66,10 +72,23 @@ namespace WeatherCollector
         private void button1_Click(object sender, EventArgs e)
         {
             button1.Enabled = false;
+            progressCount += 20;
+            progressBar.BeginInvoke(new MyIntDelegate(DelegateMethod), progressCount);
+
+            _ = PrintAsync();
+        }
+
+        void Print()
+        {
             foreach (var station in stationList)
             {
                 SendRequestForWeather(station);
             }
+        }
+
+        async Task PrintAsync()
+        {
+            await Task.Run(() => Print());
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -187,11 +206,10 @@ namespace WeatherCollector
             weatherDict[station] = currentWeekWeather;
 
             progressCount += 10;
-            progressBar.BeginInvoke(new MyDelegate(DelegateMethod), progressCount);
-            if (progressCount == 120)
+            progressBar.BeginInvoke(new MyIntDelegate(DelegateMethod), progressCount);
+            if (progressCount == 140)
             {
-                button2.Enabled = true;
-                Console.WriteLine("Check");
+                button2.BeginInvoke(new MyBoolDelegate(DelegateMethodButton2), true);
             }
         }
 
@@ -447,5 +465,9 @@ namespace WeatherCollector
             return true;
         }
 
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

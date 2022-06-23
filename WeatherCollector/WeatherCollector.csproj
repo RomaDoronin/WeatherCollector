@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>Resourses\sunny_sun_cloud_weather_cloudy_icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,42 +24,6 @@
       <VersionMinor>8</VersionMinor>
       <VersionMajor>2</VersionMajor>
       <Guid>2df8d04c-5bfa-101b-bde5-00aa0044de52</Guid>
-      <Lcid>0</Lcid>
-      <Isolated>false</Isolated>
-      <EmbedInteropTypes>true</EmbedInteropTypes>
-    </COMReference>
-    <COMReference Include="MsoEuro">
-      <WrapperTool>tlbimp</WrapperTool>
-      <VersionMinor>0</VersionMinor>
-      <VersionMajor>1</VersionMajor>
-      <Guid>76f6f3f5-9937-11d2-93bb-00105a994d2c</Guid>
-      <Lcid>0</Lcid>
-      <Isolated>false</Isolated>
-      <EmbedInteropTypes>true</EmbedInteropTypes>
-    </COMReference>
-    <COMReference Include="LCC11">
-      <WrapperTool>tlbimp</WrapperTool>
-      <VersionMinor>0</VersionMinor>
-      <VersionMajor>2</VersionMajor>
-      <Guid>edcd5812-6a06-43c3-afac-46ef5d14e22c</Guid>
-      <Lcid>0</Lcid>
-      <Isolated>false</Isolated>
-      <EmbedInteropTypes>true</EmbedInteropTypes>
-    </COMReference>
-    <COMReference Include="TASKLAUNCHLib">
-      <WrapperTool>tlbimp</WrapperTool>
-      <VersionMinor>0</VersionMinor>
-      <VersionMajor>1</VersionMajor>
-      <Guid>8d763331-f59c-46f5-99ff-f74cdc84ad0e</Guid>
-      <Lcid>0</Lcid>
-      <Isolated>false</Isolated>
-      <EmbedInteropTypes>true</EmbedInteropTypes>
-    </COMReference>
-    <COMReference Include="MsoScreenRecorderLib">
-      <WrapperTool>tlbimp</WrapperTool>
-      <VersionMinor>0</VersionMinor>
-      <VersionMajor>1</VersionMajor>
-      <Guid>73720002-33a0-11e4-9b9a-00155d152105</Guid>
       <Lcid>0</Lcid>
       <Isolated>false</Isolated>
       <EmbedInteropTypes>true</EmbedInteropTypes>
@@ -81,36 +46,19 @@
       <Isolated>false</Isolated>
       <EmbedInteropTypes>true</EmbedInteropTypes>
     </COMReference>
-    <COMReference Include="{444541a0-f621-4463-986a-52d1589e5b5d}">
+    <COMReference Include="ExcelAdaptorLib">
       <WrapperTool>tlbimp</WrapperTool>
       <VersionMinor>0</VersionMinor>
-      <VersionMajor>10</VersionMajor>
-      <Guid>444541a0-f621-4463-986a-52d1589e5b5d</Guid>
-    </COMReference>
-    <COMReference Include="AdHocReportingExcelClientLib">
-      <WrapperTool>tlbimp</WrapperTool>
-      <VersionMinor>4</VersionMinor>
-      <VersionMajor>1</VersionMajor>
-      <Guid>8e47f3a2-81a4-468e-a401-e1debbae2d8d</Guid>
+      <VersionMajor>15</VersionMajor>
+      <Guid>7bcedf81-6a82-448f-9a27-63726d499727</Guid>
       <Lcid>0</Lcid>
       <Isolated>false</Isolated>
       <EmbedInteropTypes>true</EmbedInteropTypes>
     </COMReference>
-    <COMReference Include="{cd2194aa-11be-4efd-97a6-74c39c6508ff}">
-      <WrapperTool>tlbimp</WrapperTool>
-      <VersionMinor>0</VersionMinor>
-      <VersionMajor>1</VersionMajor>
-      <Guid>cd2194aa-11be-4efd-97a6-74c39c6508ff</Guid>
-    </COMReference>
-    <COMReference Include="PowerPivotExcelClientAddInLib">
-      <WrapperTool>tlbimp</WrapperTool>
-      <VersionMinor>0</VersionMinor>
-      <VersionMajor>1</VersionMajor>
-      <Guid>e0d7d000-23e7-4dd7-859d-05117d6278c7</Guid>
-      <Lcid>0</Lcid>
-      <Isolated>false</Isolated>
-      <EmbedInteropTypes>true</EmbedInteropTypes>
-    </COMReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resourses\sunny_sun_cloud_weather_cloudy_icon.ico" />
   </ItemGroup>
 
 </Project>
