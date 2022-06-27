@@ -75,10 +75,10 @@ namespace WeatherCollector
             progressCount += 20;
             progressBar.BeginInvoke(new MyIntDelegate(DelegateMethod), progressCount);
 
-            _ = PrintAsync();
+            _ = GetDataFromStationsAsync();
         }
 
-        void Print()
+        void GetDataFromStations()
         {
             foreach (var station in stationList)
             {
@@ -86,9 +86,9 @@ namespace WeatherCollector
             }
         }
 
-        async Task PrintAsync()
+        async Task GetDataFromStationsAsync()
         {
-            await Task.Run(() => Print());
+            await Task.Run(() => GetDataFromStations());
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -135,7 +135,8 @@ namespace WeatherCollector
                 if (stationCount == 0)
                 {
                     // Настройка заголовков
-                    var date = currentDay.month + "/" + currentDay.day;
+                    string additionZero = currentDay.month < 10 ? "0" : "";
+                    var date = currentDay.day + "." + additionZero + currentDay.month;
                     var dateCol = colStart + dayCount * 2;
                     excelApp.AddData(dateCol, 2, date);
                     excelApp.AddData(dayCol, 3, "День");
