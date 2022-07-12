@@ -14,34 +14,34 @@ namespace WeatherCollector
     {
         private List<String> stationList = new List<String>()
         {
-            "arzamas",
+            "sakunja",
             "vetluga",
-            "voskresenskoe",
-            "vyksa",
-            "volzskaja-gmo",
             "krasnye-baki",
-            "lukojanov",
-            "lyskovo",
+            "voskresenskoe",
+            "volzskaja-gmo",
             "niznij-novgoro",
+            "lyskovo",
+            "arzamas",
             "pavlovo",
             "sergac",
-            "sakunja"
+            "vyksa",
+            "lukojanov"
         };
 
         private Dictionary<String, String> stationDict = new Dictionary<String, String>()
         {
-            { "arzamas", "Арзамас" },
+            { "sakunja", "Шахунья" },
             { "vetluga", "Ветлуга" },
-            { "voskresenskoe", "Воскресенское" },
-            { "vyksa", "Выкса" },
-            { "volzskaja-gmo", "Городец Волжская ГМО" },
             { "krasnye-baki", "Красные баки" },
-            { "lukojanov", "Лукоянов" },
-            { "lyskovo", "Лысково" },
+            { "voskresenskoe", "Воскресенское" },
+            { "volzskaja-gmo", "Городец Волжская ГМО" },
             { "niznij-novgoro", "Нижний Новгород I" },
+            { "lyskovo", "Лысково" },
+            { "arzamas", "Арзамас" },
             { "pavlovo", "Павлово" },
             { "sergac", "Сергач" },
-            { "sakunja", "Шахунья" }
+            { "vyksa", "Выкса" },
+            { "lukojanov", "Лукоянов" }
         };
 
         private Dictionary<String, WeekWeather> weatherDict;
@@ -117,11 +117,11 @@ namespace WeatherCollector
             var weekWeather = weatherDict[stationKey];
 
             var temperatureRow = 4 + stationCount * 3;
-            excelApp.AddData(3, temperatureRow, "t°C");
+            excelApp.AddData(3, temperatureRow, "Температура, °C");
             var precipitationRow = 5 + stationCount * 3;
-            excelApp.AddData(3, precipitationRow, "Осадки");
+            excelApp.AddData(3, precipitationRow, "Осадки, мм");
             var windRow = 6 + stationCount * 3;
-            excelApp.AddData(3, windRow, "Ветер");
+            excelApp.AddData(3, windRow, "Ветер, м/с");
             var colStart = 4;
 
             excelApp.AddData(2, temperatureRow, stationDict[stationKey]);
