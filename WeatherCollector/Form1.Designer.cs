@@ -132,7 +132,7 @@
             this.Controls.Add(this.button1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
-            this.Text = "Собиратель Погоды 1.0.0";
+            this.Text = "Собиратель Погоды 1.0.1";
             this.ResumeLayout(false);
             this.PerformLayout();
 
