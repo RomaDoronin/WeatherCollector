@@ -37,11 +37,13 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.numberForecastDaysComboBox = new System.Windows.Forms.ComboBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(178, 155);
+            this.button1.Location = new System.Drawing.Point(199, 182);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(256, 88);
             this.button1.TabIndex = 0;
@@ -60,7 +62,7 @@
             // button2
             // 
             this.button2.Enabled = false;
-            this.button2.Location = new System.Drawing.Point(440, 155);
+            this.button2.Location = new System.Drawing.Point(461, 182);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(256, 88);
             this.button2.TabIndex = 2;
@@ -117,11 +119,31 @@
             this.label4.Text = "3. Нажмите кнопку \"Сформировать таблицу\" для формирования Excel таблицы с данными" +
     " о погоде.";
             // 
+            // numberForecastDaysComboBox
+            // 
+            this.numberForecastDaysComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.numberForecastDaysComboBox.Location = new System.Drawing.Point(416, 109);
+            this.numberForecastDaysComboBox.Name = "numberForecastDaysComboBox";
+            this.numberForecastDaysComboBox.Size = new System.Drawing.Size(40, 28);
+            this.numberForecastDaysComboBox.TabIndex = 8;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(16, 112);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(394, 20);
+            this.label5.TabIndex = 9;
+            this.label5.Text = "Количество дней, на которое будет составлен прогноз.";
+            this.label5.UseWaitCursor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(898, 344);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.numberForecastDaysComboBox);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -132,7 +154,7 @@
             this.Controls.Add(this.button1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
-            this.Text = "Собиратель Погоды 1.0.1";
+            this.Text = "Собиратель Погоды 1.0.2";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -148,5 +170,7 @@
         private Label label2;
         private Label label3;
         private Label label4;
+        private ComboBox numberForecastDaysComboBox;
+        private Label label5;
     }
 }

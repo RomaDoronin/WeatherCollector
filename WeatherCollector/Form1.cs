@@ -12,8 +12,8 @@ namespace WeatherCollector
 
     public partial class Form1 : Form
     {
-        public const int numberForecastDays = 6;
-        public const int numberForecastDaysMax = 6;
+        int numberForecastDays = 6;
+        const int numberForecastDaysMax = 6;
 
         private List<String> stationList = new()
         {
@@ -54,8 +54,20 @@ namespace WeatherCollector
         public Form1()
         {
             InitializeComponent();
+            SetupComboBox();
 
             weatherDict = new Dictionary<String, WeekWeather>();
+        }
+
+        private void SetupComboBox()
+        {
+            this.numberForecastDaysComboBox.Items.Add(3);
+            this.numberForecastDaysComboBox.Items.Add(4);
+            this.numberForecastDaysComboBox.Items.Add(5);
+            this.numberForecastDaysComboBox.Items.Add(6);
+            
+            var index = this.numberForecastDaysComboBox.Items.IndexOf(numberForecastDays);
+            this.numberForecastDaysComboBox.SelectedIndex = index;
         }
 
         public delegate void MyIntDelegate(int value);
@@ -96,6 +108,7 @@ namespace WeatherCollector
 
         private void button2_Click(object sender, EventArgs e)
         {
+            numberForecastDays = Int16.Parse(numberForecastDaysComboBox.SelectedItem.ToString());
             CreateDoc();
         }
 
