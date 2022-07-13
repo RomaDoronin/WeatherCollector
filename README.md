@@ -4,6 +4,7 @@
 
 Дополнительные зависимости:
 * Microsoft.Office.Interop.Excel
-* Необходимо скачать и установить последнюю версию .NET Desktop Runtime 6.0.x - https://dotnet.microsoft.com/en-us/download/dotnet/6.0
+
+Для запуска уже собраного бинаря из репозитория (WeatherCollector/WeatherCollector/bin/Release/net6.0-windows/WeatherCollector.exe) необходимо скачать и установить последнюю версию .NET Desktop Runtime 6.0.x - https://dotnet.microsoft.com/en-us/download/dotnet/6.0
 
 © Roman Doronin
