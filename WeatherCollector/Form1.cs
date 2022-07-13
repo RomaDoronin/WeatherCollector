@@ -12,6 +12,9 @@ namespace WeatherCollector
 
     public partial class Form1 : Form
     {
+        public const int numberForecastDays = 6;
+        public const int numberForecastDaysMax = 6;
+
         private List<String> stationList = new()
         {
             "sakunja",
@@ -126,7 +129,7 @@ namespace WeatherCollector
 
             excelApp.AddData(2, temperatureRow, stationDict[stationKey]);
 
-            for (var dayCount = 0; dayCount < 5; dayCount++)
+            for (var dayCount = 0; dayCount < numberForecastDays; dayCount++)
             {
                 var currentDay = weekWeather.week[dayCount + 1];
 
@@ -248,7 +251,7 @@ namespace WeatherCollector
                         {
                             currentWeekWeather.SetWindSpeed(windSpeed, dayCount, false);
                         }
-                        if (dayCount == 6)
+                        if (dayCount == numberForecastDaysMax)
                         {
                             if (findDayWind == FindState.Finding)
                             {
@@ -311,7 +314,7 @@ namespace WeatherCollector
                         {
                             currentWeekWeather.SetWindDirection(stringWind, dayCount, false);
                         }
-                        if (dayCount == 6)
+                        if (dayCount == numberForecastDaysMax)
                         {
                             if (findDayWind == FindState.Finding)
                             {
@@ -386,7 +389,7 @@ namespace WeatherCollector
                             {
                                 currentWeekWeather.SetPrecipitation(precipitation, dayCount, false);
                             }
-                            if (dayCount == 6)
+                            if (dayCount == numberForecastDaysMax)
                             {
                                 if (findDayPrecipitation == FindState.Finding)
                                 {
@@ -448,7 +451,7 @@ namespace WeatherCollector
                     }
                     else
                     {
-                        if (dayCount == 6)
+                        if (dayCount == numberForecastDaysMax + 1)
                         {
                             break;
                         }
