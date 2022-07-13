@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Excel = Microsoft.Office.Interop.Excel;
+﻿using Excel = Microsoft.Office.Interop.Excel;
 
 namespace WeatherCollector
 {
     public class CreateExcelDoc
     {
-        private Excel.Application app = null;
-        private Excel.Workbook workbook = null;
-        private Excel.Worksheet worksheet = null;
-        private Excel.Range workSheet_range = null; 
+        private Excel.Application app;
+        private Excel.Workbook workbook;
+        private Excel.Worksheet worksheet;
+        private Excel.Range workSheet_range; 
 
         public CreateExcelDoc()
         {
@@ -29,7 +24,7 @@ namespace WeatherCollector
                 worksheet = (Excel.Worksheet)workbook.Sheets[1];
                 worksheet.Cells.NumberFormat = "@";
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Console.Write("Error");
             }
@@ -41,7 +36,7 @@ namespace WeatherCollector
             {
                 worksheet.Cells[row, col] = data;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Console.Write("Error");
             }

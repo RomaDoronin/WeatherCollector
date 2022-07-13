@@ -12,7 +12,7 @@ namespace WeatherCollector
 
     public partial class Form1 : Form
     {
-        private List<String> stationList = new List<String>()
+        private List<String> stationList = new()
         {
             "sakunja",
             "vetluga",
@@ -28,7 +28,7 @@ namespace WeatherCollector
             "lukojanov"
         };
 
-        private Dictionary<String, String> stationDict = new Dictionary<String, String>()
+        private readonly Dictionary<String, String> stationDict = new()
         {
             { "sakunja", "Шахунья" },
             { "vetluga", "Ветлуга" },
@@ -361,14 +361,19 @@ namespace WeatherCollector
                         int count = 0;
                         while (ch != '<' && ch != ')')
                         {
-                            precipitation += ch;
+                            if (ch == '.')
+                            {
+                                precipitation += ',';
+                            } else
+                            {
+                                precipitation += ch;
+                            }
                             count++;
                             ch = source[startIndex + count];
                         }
 
                         if (precipitation.EndsWith('%'))
                         {
-                            var probability = precipitation; // !
                             continue;
                         }
                         else
