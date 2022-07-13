@@ -12,7 +12,7 @@ namespace WeatherCollector
 
     public partial class Form1 : Form
     {
-        int numberForecastDays = 6;
+        static int numberForecastDays = 6;
         const int numberForecastDaysMax = 6;
 
         private List<String> stationList = new()
@@ -45,6 +45,22 @@ namespace WeatherCollector
             { "sergac", "Сергач" },
             { "vyksa", "Выкса" },
             { "lukojanov", "Лукоянов" }
+        };
+
+        private readonly Dictionary<int, String> monthNumberDict = new()
+        {
+            { 1, "января" },
+            { 2, "февраля" },
+            { 3, "марта" },
+            { 4, "апреля" },
+            { 5, "мая" },
+            { 6, "июня" },
+            { 7, "июля" },
+            { 8, "августа" },
+            { 9, "сентября" },
+            { 10, "октября" },
+            { 11, "ноября" },
+            { 12, "декабря" }
         };
 
         private Dictionary<String, WeekWeather> weatherDict;
@@ -156,8 +172,9 @@ namespace WeatherCollector
                 if (stationCount == 0)
                 {
                     // Настройка заголовков
-                    string additionZero = currentDay.month < 10 ? "0" : "";
-                    var date = currentDay.day + "." + additionZero + currentDay.month;
+                    var stringDay = currentDay.day.ToString();
+                    stringDay = stringDay.Length == 1 ? '0' + stringDay : stringDay;
+                    var date = stringDay + " " + monthNumberDict[currentDay.month];
                     var dateCol = colStart + dayCount * 2;
                     excelApp.AddData(dateCol, 2, date);
                     excelApp.AddData(dayCol, 3, "День");
@@ -178,11 +195,31 @@ namespace WeatherCollector
 
         private static void MergeNeededCell(CreateExcelDoc excelApp)
         {
+            // Строки
             excelApp.Merge("D2", "E2");
             excelApp.Merge("F2", "G2");
             excelApp.Merge("H2", "I2");
-            excelApp.Merge("J2", "K2");
-            excelApp.Merge("L2", "M2");
+            if (numberForecastDays > 3)
+            {
+                excelApp.Merge("J2", "K2");
+            }
+            if (numberForecastDays > 4)
+            {
+                excelApp.Merge("L2", "M2");
+            }
+            if (numberForecastDays > 5)
+            {
+                excelApp.Merge("N2", "O2");
+            }
+
+            // Столбцы
+            excelApp.Merge("C2", "C3");
+            excelApp.Merge("B2", "B3");
+            for (int rowCount = 4; rowCount < 40; rowCount += 3)
+            {
+                excelApp.Merge("B" + rowCount.ToString(), "B" + (rowCount + 2).ToString());
+            }
+            excelApp.Merge("B4", "B6");
         }
 
         private void SendRequestForWeather(string station)

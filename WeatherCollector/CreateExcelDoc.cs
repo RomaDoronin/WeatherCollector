@@ -44,8 +44,19 @@ namespace WeatherCollector
 
         public void Merge(string cell1, string cell2)
         {
-            workSheet_range = worksheet.get_Range(cell1, cell2);
-            workSheet_range.Merge(2);
+            var firstCell = ParseStringCell(cell1);
+            var secondCell = ParseStringCell(cell2);
+
+            worksheet.Range[worksheet.Cells[firstCell.Item1, firstCell.Item2], worksheet.Cells[secondCell.Item1, secondCell.Item2]].Merge();
+        }
+
+        private (int, int) ParseStringCell(string cell)
+        {
+            var letter = cell[0];
+            int columnNumber = letter - 'A' + 1;
+            var number = cell[1..];
+            int rowNumber = Int32.Parse(number);
+            return (rowNumber, columnNumber);
         }
     }
 }
