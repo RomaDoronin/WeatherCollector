@@ -108,13 +108,18 @@ namespace WeatherCollector
 
         private void button2_Click(object sender, EventArgs e)
         {
-            numberForecastDays = Int16.Parse(numberForecastDaysComboBox.SelectedItem.ToString());
+            UpdateNumberForecastDays();
             CreateDoc();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             MessageBox.Show("В случае возникновения вопросов обращаться по адресу:\n\nroman.doronin.sklexp@yandex.ru\n\nСсылка на исходный код:\n\nhttps://github.com/RomaDoronin/WeatherCollector", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void UpdateNumberForecastDays()
+        {
+            numberForecastDays = Int16.Parse(numberForecastDaysComboBox.SelectedItem.ToString());
         }
 
         private void CreateDoc()
