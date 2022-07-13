@@ -170,7 +170,7 @@
                     result += "СВ";
                     break;
             }
-            return result += "-" + speed;
+            return result += ", " + speed;
         }
     }
 
