@@ -2,12 +2,28 @@
 
 namespace WeatherCollector
 {
+    public enum HorizontalAlignment
+    {
+        Left,
+        Center
+    }
+
     public class CreateExcelDoc
     {
         private Excel.Application app;
         private Excel.Workbook workbook;
         private Excel.Worksheet worksheet;
-        private Excel.Range workSheet_range; 
+
+        private static Excel.XlHAlign GetExcelHorizontalAlignment(HorizontalAlignment align)
+        {
+            if (align == HorizontalAlignment.Center)
+            {
+                return Excel.XlHAlign.xlHAlignCenter;
+            } else
+            {
+                return Excel.XlHAlign.xlHAlignLeft;
+            }
+        }
 
         public CreateExcelDoc()
         {
@@ -30,11 +46,13 @@ namespace WeatherCollector
             }
         }
 
-        public void AddData(int col, int row, string data)
+        public void AddData(int col, int row, string data, HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left)
         {
             try
             {
                 worksheet.Cells[row, col] = data;
+                worksheet.Cells[row, col].HorizontalAlignment = GetExcelHorizontalAlignment(horizontalAlignment);
+                worksheet.Cells[row, col].VerticalAlignment = Excel.XlHAlign.xlHAlignGeneral; // xlHAlignCenter;
             }
             catch (Exception)
             {

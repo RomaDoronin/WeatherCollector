@@ -178,24 +178,24 @@ namespace WeatherCollector
                     stringDay = stringDay.Length == 1 ? '0' + stringDay : stringDay;
                     var date = stringDay + " " + monthNumberDict[currentDay.month];
                     var dateCol = colStart + dayCount * 2;
-                    excelApp.AddData(dateCol, 2, date);
-                    excelApp.AddData(dayCol, 3, "День");
-                    excelApp.AddData(nightCol, 3, "Ночь");
+                    excelApp.AddData(dateCol, 2, date, HorizontalAlignment.Center);
+                    excelApp.AddData(dayCol, 3, "День", HorizontalAlignment.Center);
+                    excelApp.AddData(nightCol, 3, "Ночь", HorizontalAlignment.Center);
                 }
 
                 // Занесение данных о погоде
-                excelApp.AddData(dayCol, temperatureRow, currentDay.dayWeather.temperature);
-                excelApp.AddData(nightCol, temperatureRow, currentDay.nightWeather.temperature);
+                excelApp.AddData(dayCol, temperatureRow, currentDay.dayWeather.temperature, HorizontalAlignment.Center);
+                excelApp.AddData(nightCol, temperatureRow, currentDay.nightWeather.temperature, HorizontalAlignment.Center);
 
-                excelApp.AddData(dayCol, precipitationRow, currentDay.dayWeather.precipitation);
-                excelApp.AddData(nightCol, precipitationRow, currentDay.nightWeather.precipitation);
+                excelApp.AddData(dayCol, precipitationRow, currentDay.dayWeather.precipitation, HorizontalAlignment.Center);
+                excelApp.AddData(nightCol, precipitationRow, currentDay.nightWeather.precipitation, HorizontalAlignment.Center);
 
-                excelApp.AddData(dayCol, windRow, currentDay.dayWeather.wind.GetWindData());
-                excelApp.AddData(nightCol, windRow, currentDay.nightWeather.wind.GetWindData());
+                excelApp.AddData(dayCol, windRow, currentDay.dayWeather.wind.GetWindData(), HorizontalAlignment.Center);
+                excelApp.AddData(nightCol, windRow, currentDay.nightWeather.wind.GetWindData(), HorizontalAlignment.Center);
             }
         }
 
-            private static void MergeNeededCell(CreateExcelDoc excelApp)
+        private static void MergeNeededCell(CreateExcelDoc excelApp)
         {
             // Строки
             excelApp.Merge("D2", "E2");
