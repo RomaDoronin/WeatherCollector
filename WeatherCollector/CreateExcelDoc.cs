@@ -52,7 +52,7 @@ namespace WeatherCollector
             {
                 worksheet.Cells[row, col] = data;
                 worksheet.Cells[row, col].HorizontalAlignment = GetExcelHorizontalAlignment(horizontalAlignment);
-                worksheet.Cells[row, col].VerticalAlignment = Excel.XlHAlign.xlHAlignGeneral; // xlHAlignCenter;
+                worksheet.Cells[row, col].VerticalAlignment = Excel.XlHAlign.xlHAlignGeneral;
             }
             catch (Exception)
             {
