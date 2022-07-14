@@ -141,11 +141,12 @@ namespace WeatherCollector
         private void CreateDoc()
         {
             CreateExcelDoc excelApp = new CreateExcelDoc();
-            MergeNeededCell(excelApp);
             for (var stationCount = 0; stationCount < stationList.Count; stationCount++)
             {
                 FillDoc(excelApp, stationCount);
             }
+            MergeNeededCell(excelApp);
+            BoldNeededCell(excelApp);
         }
 
         private void FillDoc(CreateExcelDoc excelApp, int stationCount)
@@ -193,7 +194,7 @@ namespace WeatherCollector
             }
         }
 
-        private static void MergeNeededCell(CreateExcelDoc excelApp)
+            private static void MergeNeededCell(CreateExcelDoc excelApp)
         {
             // Строки
             excelApp.Merge("D2", "E2");
@@ -220,6 +221,18 @@ namespace WeatherCollector
                 excelApp.Merge("B" + rowCount.ToString(), "B" + (rowCount + 2).ToString());
             }
             excelApp.Merge("B4", "B6");
+        }
+
+        private void BoldNeededCell(CreateExcelDoc excelApp)
+        {
+            var mecricColumn = 3;
+            var metricNumber = 3;
+            var firstMecticRow = 5;
+            for (var count = 0; count < stationList.Count; count++)
+            {
+                var boltRow = count * metricNumber + firstMecticRow;
+                excelApp.EntireRowDoBold(boltRow, mecricColumn);
+            }
         }
 
         private void SendRequestForWeather(string station)

@@ -50,6 +50,12 @@ namespace WeatherCollector
             worksheet.Range[worksheet.Cells[firstCell.Item1, firstCell.Item2], worksheet.Cells[secondCell.Item1, secondCell.Item2]].Merge();
         }
 
+        public void EntireRowDoBold(int row, int column)
+        {
+            //worksheet.get_Range("C5", "C5").Cells.Style.Bold = true;
+            worksheet.Cells[row, column].EntireRow.Font.Bold = true;
+        }
+
         private (int, int) ParseStringCell(string cell)
         {
             var letter = cell[0];
