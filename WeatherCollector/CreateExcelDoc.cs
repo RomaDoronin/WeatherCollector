@@ -52,8 +52,12 @@ namespace WeatherCollector
 
         public void EntireRowDoBold(int row, int column)
         {
-            //worksheet.get_Range("C5", "C5").Cells.Style.Bold = true;
             worksheet.Cells[row, column].EntireRow.Font.Bold = true;
+        }
+
+        public void SetColumnWidth(int column, int width)
+        {
+            worksheet.Columns[column].ColumnWidth = width;
         }
 
         private (int, int) ParseStringCell(string cell)

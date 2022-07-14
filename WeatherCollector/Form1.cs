@@ -147,6 +147,7 @@ namespace WeatherCollector
             }
             MergeNeededCell(excelApp);
             BoldNeededCell(excelApp);
+            SetColumnWidth(excelApp);
         }
 
         private void FillDoc(CreateExcelDoc excelApp, int stationCount)
@@ -233,6 +234,18 @@ namespace WeatherCollector
                 var boltRow = count * metricNumber + firstMecticRow;
                 excelApp.EntireRowDoBold(boltRow, mecricColumn);
             }
+
+            var dateRow = 2;
+            var dayNightRow = 3;
+            var firstDataColumn = 4;
+            excelApp.EntireRowDoBold(dateRow, firstDataColumn);
+            excelApp.EntireRowDoBold(dayNightRow, firstDataColumn);
+        }
+
+        private void SetColumnWidth(CreateExcelDoc excelApp)
+        {
+            excelApp.SetColumnWidth(2, 22);
+            excelApp.SetColumnWidth(3, 15);
         }
 
         private void SendRequestForWeather(string station)
