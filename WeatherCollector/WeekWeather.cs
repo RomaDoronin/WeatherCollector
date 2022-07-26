@@ -164,10 +164,10 @@
                     result += "ЮЗ";
                     break;
                 case WindDirection.West:
-                    result += "ЮВ";
+                    result += "З";
                     break;
                 case WindDirection.NorthWest:
-                    result += "СВ";
+                    result += "СЗ";
                     break;
             }
             return result += ", " + speed;
