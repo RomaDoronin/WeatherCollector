@@ -337,6 +337,8 @@ namespace WeatherCollector
         {
             currentWeekWeather = new WeekWeather();
             FindTemperatureGismeteo(source);
+            FindPrecipitationGismeteo(source);
+
             Console.WriteLine();
         }
 
@@ -608,10 +610,10 @@ namespace WeatherCollector
         private void FindTemperatureGismeteo(string source)
         {
             var commonKeyForParametr = "widget-row-chart widget-row-chart-temperature";
-            var beginKey = "unit_temperature_c\">";
+            var beginKeys = new List<string>() { "unit_temperature_c\">" };
             var endKey = '<';
             var dataAmount = numberForecastDaysOtherSource * 4;
-            var temperatureParametrs = FindParametrs(source, commonKeyForParametr, beginKey, endKey, dataAmount);
+            var temperatureParametrs = FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
             for (int count = 0; count < temperatureParametrs.Count; count++)
             {
                 switch (count % 4)
@@ -626,7 +628,28 @@ namespace WeatherCollector
             }
         }
 
-        private List<string> FindParametrs(string source, string commonKeyForParametr, string beginKey, char endKey, int dataAmount)
+        private void FindPrecipitationGismeteo(string source)
+        {
+            var commonKeyForParametr = "Осадки, мм";
+            var beginKeys = new List<string>() { "item-unit unit-blue\">", "item-unit\">" };
+            var endKey = '<';
+            var dataAmount = numberForecastDaysOtherSource * 4;
+            var precipitationParametrs = FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
+            for (int count = 0; count < precipitationParametrs.Count; count++)
+            {
+                switch (count % 4)
+                {
+                    case 0:
+                        currentWeekWeather.SetPrecipitation(precipitationParametrs[count], count / 4, false);
+                        break;
+                    case 2:
+                        currentWeekWeather.SetPrecipitation(precipitationParametrs[count], count / 4, true);
+                        break;
+                }
+            }
+        }
+
+        private List<string> FindParametrs(string source, string commonKeyForParametr, List<string> beginKeys, char endKey, int dataAmount)
         {
             var result = new List<string>();
             var dataCount = 1;
@@ -636,26 +659,29 @@ namespace WeatherCollector
             {
                 if (findState == FindState.Finding)
                 {
-                    if (CollectSubstring(beginKey, source, i))
+                    foreach (var beginKey in beginKeys)
                     {
-                        int startIndex = i + beginKey.Length;
-                        string stringParametr = "";
-                        char ch = source[startIndex];
-                        int count = 0;
-                        while (ch != endKey)
+                        if (CollectSubstring(beginKey, source, i))
                         {
-                            stringParametr += ch;
-                            count++;
-                            ch = source[startIndex + count];
-                        }
+                            int startIndex = i + beginKey.Length;
+                            string stringParametr = "";
+                            char ch = source[startIndex];
+                            int count = 0;
+                            while (ch != endKey)
+                            {
+                                stringParametr += ch;
+                                count++;
+                                ch = source[startIndex + count];
+                            }
 
-                        result.Add(stringParametr);
+                            result.Add(stringParametr);
 
-                        if (dataCount == dataAmount)
-                        {
-                            break;
+                            if (dataCount == dataAmount)
+                            {
+                                return result;
+                            }
+                            dataCount++;
                         }
-                        dataCount++;
                     }
                 }
                 else if (CollectSubstring(commonKeyForParametr, source, i))
