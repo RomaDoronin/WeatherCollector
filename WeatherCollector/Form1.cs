@@ -3,6 +3,25 @@ using System.Text;
 
 namespace WeatherCollector
 {
+    public struct ParametrProperty
+    {
+        string value;
+        int dayCount;
+        bool isDay;
+
+        public ParametrProperty(string value, int dayCount, bool isDay)
+        {
+            this.value = value;
+            this.dayCount = dayCount;
+            this.isDay = isDay;
+        }
+    }
+
+    enum DataSource
+    {
+        GidroMC,
+        Gismeteo
+    }
     enum FindState
     {
         NotFind,
@@ -14,8 +33,9 @@ namespace WeatherCollector
     {
         static int numberForecastDays = 6;
         const int numberForecastDaysMax = 6;
+        const int numberForecastDaysOtherSource = 3;
 
-        private List<String> stationList = new()
+        private List<String> stationListGidroMC = new()
         {
             "sakunja",
             "vetluga",
@@ -31,6 +51,13 @@ namespace WeatherCollector
             "lukojanov"
         };
 
+        private List<String> stationListGismeteo = new()
+        {
+            "shakhunya-4322",
+            "nizhny-novgorod-4355",
+            "vyksa-4375"
+        };
+
         private readonly Dictionary<String, String> stationDict = new()
         {
             { "sakunja", "Шахунья" },
@@ -44,7 +71,11 @@ namespace WeatherCollector
             { "pavlovo", "Павлово" },
             { "sergac", "Сергач" },
             { "vyksa", "Выкса" },
-            { "lukojanov", "Лукоянов" }
+            { "lukojanov", "Лукоянов" },
+
+            { "shakhunya-4322", "Шахунья" },
+            { "nizhny-novgorod-4355", "Нижний Новгород" },
+            { "vyksa-4375", "Выкса" }
         };
 
         private readonly Dictionary<int, String> monthNumberDict = new()
@@ -111,11 +142,16 @@ namespace WeatherCollector
 
         void GetDataFromStations()
         {
-            foreach (var station in stationList)
+            //foreach (var station in stationListGidroMC)
+            //{
+            //    SendRequestForWeather(DataSource.GidroMC, station);
+            //}
+            foreach (var station in stationListGismeteo)
             {
-                SendRequestForWeather(station);
+                SendRequestForWeather(DataSource.Gismeteo, station);
             }
         }
+
 
         async Task GetDataFromStationsAsync()
         {
@@ -141,7 +177,7 @@ namespace WeatherCollector
         private void CreateDoc()
         {
             CreateExcelDoc excelApp = new CreateExcelDoc();
-            for (var stationCount = 0; stationCount < stationList.Count; stationCount++)
+            for (var stationCount = 0; stationCount < stationListGidroMC.Count; stationCount++)
             {
                 FillDoc(excelApp, stationCount);
             }
@@ -152,7 +188,7 @@ namespace WeatherCollector
 
         private void FillDoc(CreateExcelDoc excelApp, int stationCount)
         {
-            var stationKey = stationList[stationCount];
+            var stationKey = stationListGidroMC[stationCount];
             var weekWeather = weatherDict[stationKey];
 
             var temperatureRow = 4 + stationCount * 3;
@@ -229,7 +265,7 @@ namespace WeatherCollector
             var mecricColumn = 3;
             var metricNumber = 3;
             var firstMecticRow = 5;
-            for (var count = 0; count < stationList.Count; count++)
+            for (var count = 0; count < stationListGidroMC.Count; count++)
             {
                 var boltRow = count * metricNumber + firstMecticRow;
                 excelApp.EntireRowDoBold(boltRow, mecricColumn);
@@ -248,9 +284,19 @@ namespace WeatherCollector
             excelApp.SetColumnWidth(3, 15);
         }
 
-        private void SendRequestForWeather(string station)
+        private void SendRequestForWeather(DataSource dataSource, string station)
         {
-            String url = "https://meteoinfo.ru/forecasts5000/russia/nizhegorodskaya-area/" + station;
+            String url = "";
+
+            switch (dataSource)
+            {
+                case DataSource.GidroMC:
+                    url = "https://meteoinfo.ru/forecasts5000/russia/nizhegorodskaya-area/" + station;
+                    break;
+                case DataSource.Gismeteo:
+                    url = "https://www.gismeteo.ru/weather-" + station + "/3-days/";
+                    break;
+            }
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
@@ -269,7 +315,15 @@ namespace WeatherCollector
                 StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8);
 
                 var str = readStream.ReadToEnd();
-                ParseHtmlString(str, station);
+                switch (dataSource)
+                {
+                    case DataSource.GidroMC:
+                        ParseHtmlStringGidroMC(str, station);
+                        break;
+                    case DataSource.Gismeteo:
+                        ParseHtmlStringGismeteo(str, station);
+                        break;
+                }
                 readStream.Close();
             }
             else if (response.StatusCode == HttpStatusCode.NotFound)
@@ -279,7 +333,14 @@ namespace WeatherCollector
             response.Close();
         }
 
-        private void ParseHtmlString(string source, string station)
+        private void ParseHtmlStringGismeteo(string source, string station)
+        {
+            currentWeekWeather = new WeekWeather();
+            FindTemperatureGismeteo(source);
+            Console.WriteLine();
+        }
+
+        private void ParseHtmlStringGidroMC(string source, string station)
         {
             currentWeekWeather = new WeekWeather();
 
@@ -541,6 +602,72 @@ namespace WeatherCollector
                     }
                 }
             }
+        
+        }
+
+        private void FindTemperatureGismeteo(string source)
+        {
+            var commonKeyForParametr = "widget-row-chart widget-row-chart-temperature";
+            var beginKey = "unit_temperature_c\">";
+            var endKey = '<';
+            var dataAmount = numberForecastDaysOtherSource * 4;
+            var temperatureParametrs = FindParametrs(source, commonKeyForParametr, beginKey, endKey, dataAmount);
+            for (int count = 0; count < temperatureParametrs.Count; count++)
+            {
+                switch (count % 4)
+                {
+                    case 0:
+                        currentWeekWeather.SetTemperature(temperatureParametrs[count], count / 4, false);
+                        break;
+                    case 2:
+                        currentWeekWeather.SetTemperature(temperatureParametrs[count], count / 4, true);
+                        break;
+                }
+            }
+        }
+
+        private List<string> FindParametrs(string source, string commonKeyForParametr, string beginKey, char endKey, int dataAmount)
+        {
+            var result = new List<string>();
+            var dataCount = 1;
+            var findState = FindState.NotFind;
+
+            for (int i = 0; i < source.Length - commonKeyForParametr.Length; i++)
+            {
+                if (findState == FindState.Finding)
+                {
+                    if (CollectSubstring(beginKey, source, i))
+                    {
+                        int startIndex = i + beginKey.Length;
+                        string stringParametr = "";
+                        char ch = source[startIndex];
+                        int count = 0;
+                        while (ch != endKey)
+                        {
+                            stringParametr += ch;
+                            count++;
+                            ch = source[startIndex + count];
+                        }
+
+                        result.Add(stringParametr);
+
+                        if (dataCount == dataAmount)
+                        {
+                            break;
+                        }
+                        dataCount++;
+                    }
+                }
+                else if (CollectSubstring(commonKeyForParametr, source, i))
+                {
+                    if (findState == FindState.NotFind)
+                    {
+                        findState = FindState.Finding;
+                    }
+                }
+            }
+
+            return result;
         }
 
         private bool CollectSubstring(string substring, string source, int index)
