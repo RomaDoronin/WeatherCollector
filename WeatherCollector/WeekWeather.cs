@@ -50,16 +50,16 @@
             DayWeather day = week[dayIndex];
             if (isDay)
             {
-                day.dayWeather.wind.windDirection = ParseStringToWindDirection(windDirection);
+                day.dayWeather.wind.direction = ParseStringToWindDirection(windDirection);
             }
             else
             {
-                day.nightWeather.wind.windDirection = ParseStringToWindDirection(windDirection);
+                day.nightWeather.wind.direction = ParseStringToWindDirection(windDirection);
             }
             week[dayIndex] = day;
         }
 
-        public void SetWindSpeed(int windSpeed, int dayIndex, bool isDay)
+        public void SetWindSpeed(string windSpeed, int dayIndex, bool isDay)
         {
             DayWeather day = week[dayIndex];
             if (isDay)
@@ -73,28 +73,20 @@
             week[dayIndex] = day;
         }
 
-        private static WindDirection ParseStringToWindDirection(string windDirection)
+        private static string ParseStringToWindDirection(string windDirection)
         {
             switch (windDirection)
             {
-                case "С":
-                    return WindDirection.North;
                 case "С-З":
-                    return WindDirection.NorthWest;
-                case "З":
-                    return WindDirection.West;
+                    return "СЗ";
                 case "Ю-З":
-                    return WindDirection.SouthWest;
-                case "Ю":
-                    return WindDirection.South;
+                    return "ЮЗ";
                 case "Ю-В":
-                    return WindDirection.SouthEast;
-                case "В":
-                    return WindDirection.East;
+                    return "ЮВ";
                 case "С-В":
-                    return WindDirection.NorthEast;
+                    return "СВ";
                 default:
-                    return WindDirection.North;
+                    return windDirection;
             }
         }
     }
@@ -106,10 +98,10 @@
         public Weather nightWeather;
         public Weather dayWeather;
 
-        public DayWeather(int _day, int _month)
+        public DayWeather(int day, int month)
         {
-            day = _day;
-            month = _month;
+            this.day = day;
+            this.month = month;
             nightWeather = new Weather();
             dayWeather = new Weather();
         }
@@ -131,58 +123,18 @@
 
     struct Wind
     {
-        public int? speed;
-        public WindDirection? windDirection;
+        public string? speed;
+        public string? direction;
 
         public Wind()
         {
             speed = null;
-            windDirection = null;
+            direction = null;
         }
 
         public string GetWindData()
         {
-            var result = "";
-            switch (windDirection)
-            {
-                case WindDirection.North:
-                    result += "С";
-                    break;
-                case WindDirection.NorthEast:
-                    result += "СВ";
-                    break;
-                case WindDirection.East:
-                    result += "В";
-                    break;
-                case WindDirection.SouthEast:
-                    result += "ЮВ";
-                    break;
-                case WindDirection.South:
-                    result += "Ю";
-                    break;
-                case WindDirection.SouthWest:
-                    result += "ЮЗ";
-                    break;
-                case WindDirection.West:
-                    result += "З";
-                    break;
-                case WindDirection.NorthWest:
-                    result += "СЗ";
-                    break;
-            }
-            return result += ", " + speed;
+            return direction += ", " + speed;
         }
-    }
-
-    enum WindDirection
-    {
-        North,
-        NorthEast,
-        East,
-        SouthEast,
-        South,
-        SouthWest,
-        West,
-        NorthWest
     }
 }

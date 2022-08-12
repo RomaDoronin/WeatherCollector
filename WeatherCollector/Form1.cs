@@ -338,6 +338,8 @@ namespace WeatherCollector
             currentWeekWeather = new WeekWeather();
             FindTemperatureGismeteo(source);
             FindPrecipitationGismeteo(source);
+            FindWindDirectionGismeteo(source);
+            FindWindSpeedGismeteo(source);
 
             Console.WriteLine();
         }
@@ -385,15 +387,14 @@ namespace WeatherCollector
                             count++;
                             ch = source[startIndex + count];
                         }
-                        var windSpeed = Convert.ToInt16(stringWind);
 
                         if (findDayWind == FindState.Finding)
                         {
-                            currentWeekWeather.SetWindSpeed(windSpeed, dayCount, true);
+                            currentWeekWeather.SetWindSpeed(stringWind, dayCount, true);
                         }
                         else if (findNightWind == FindState.Finding)
                         {
-                            currentWeekWeather.SetWindSpeed(windSpeed, dayCount, false);
+                            currentWeekWeather.SetWindSpeed(stringWind, dayCount, false);
                         }
                         if (dayCount == numberForecastDaysMax)
                         {
@@ -644,6 +645,48 @@ namespace WeatherCollector
                         break;
                     case 2:
                         currentWeekWeather.SetPrecipitation(precipitationParametrs[count], count / 4, true);
+                        break;
+                }
+            }
+        }
+
+        private void FindWindDirectionGismeteo(string source)
+        {
+            var commonKeyForParametr = "widget-row-wind-direction";
+            var beginKeys = new List<string>() { "\"direction\">" };
+            var endKey = '<';
+            var dataAmount = numberForecastDaysOtherSource * 4;
+            var precipitationParametrs = FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
+            for (int count = 0; count < precipitationParametrs.Count; count++)
+            {
+                switch (count % 4)
+                {
+                    case 0:
+                        currentWeekWeather.SetWindDirection(precipitationParametrs[count], count / 4, false);
+                        break;
+                    case 2:
+                        currentWeekWeather.SetWindDirection(precipitationParametrs[count], count / 4, true);
+                        break;
+                }
+            }
+        }
+
+        private void FindWindSpeedGismeteo(string source)
+        {
+            var commonKeyForParametr = "widget-row-wind-speed\"";
+            var beginKeys = new List<string>() { "unit_wind_m_s\">" };
+            var endKey = ' ';
+            var dataAmount = numberForecastDaysOtherSource * 4;
+            var precipitationParametrs = FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
+            for (int count = 0; count < precipitationParametrs.Count; count++)
+            {
+                switch (count % 4)
+                {
+                    case 0:
+                        currentWeekWeather.SetWindSpeed(precipitationParametrs[count], count / 4, false);
+                        break;
+                    case 2:
+                        currentWeekWeather.SetWindSpeed(precipitationParametrs[count], count / 4, true);
                         break;
                 }
             }
