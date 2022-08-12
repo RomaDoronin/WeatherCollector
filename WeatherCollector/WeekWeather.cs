@@ -132,8 +132,12 @@
             direction = null;
         }
 
-        public string GetWindData()
+        public string? GetWindData()
         {
+            if ((direction == null) || (speed == null))
+            {
+                return null;
+            }
             return direction += ", " + speed;
         }
     }

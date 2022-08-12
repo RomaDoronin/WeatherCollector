@@ -31,9 +31,8 @@ namespace WeatherCollector
 
     public partial class Form1 : Form
     {
-        static int numberForecastDays = 6;
         const int numberForecastDaysMax = 6;
-        const int numberForecastDaysOtherSource = 3;
+        static int numberForecastDays = 6;
 
         private List<String> stationListGidroMC = new()
         {
@@ -161,7 +160,7 @@ namespace WeatherCollector
         private void button2_Click(object sender, EventArgs e)
         {
             UpdateNumberForecastDays();
-            CreateDoc();
+            CreateDoc(DataSource.Gismeteo);
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -174,21 +173,40 @@ namespace WeatherCollector
             numberForecastDays = Int16.Parse(numberForecastDaysComboBox.SelectedItem.ToString());
         }
 
-        private void CreateDoc()
+        private void CreateDoc(DataSource dataSource)
         {
             CreateExcelDoc excelApp = new CreateExcelDoc();
-            for (var stationCount = 0; stationCount < stationListGidroMC.Count; stationCount++)
+            var stationListSize = 0;
+            switch (dataSource)
             {
-                FillDoc(excelApp, stationCount);
+                case DataSource.GidroMC:
+                    stationListSize = stationListGidroMC.Count;
+                    break;
+                case DataSource.Gismeteo:
+                    stationListSize = stationListGismeteo.Count;
+                    break;
             }
-            MergeNeededCell(excelApp);
-            BoldNeededCell(excelApp);
+            for (var stationCount = 0; stationCount < stationListSize; stationCount++)
+            {
+                var stationKey = "";
+                switch (dataSource)
+                {
+                    case DataSource.GidroMC:
+                        stationKey = stationListGidroMC[stationCount];
+                        break;
+                    case DataSource.Gismeteo:
+                        stationKey = stationListGismeteo[stationCount];
+                        break;
+                }
+                FillDoc(excelApp, stationCount, stationKey);
+            }
+            MergeNeededCell(excelApp, dataSource);
+            BoldNeededCell(excelApp, dataSource);
             SetColumnWidth(excelApp);
         }
 
-        private void FillDoc(CreateExcelDoc excelApp, int stationCount)
+        private void FillDoc(CreateExcelDoc excelApp, int stationCount, string stationKey)
         {
-            var stationKey = stationListGidroMC[stationCount];
             var weekWeather = weatherDict[stationKey];
 
             var temperatureRow = 4 + stationCount * 3;
@@ -223,15 +241,29 @@ namespace WeatherCollector
                 excelApp.AddData(dayCol, temperatureRow, currentDay.dayWeather.temperature, HorizontalAlignment.Center);
                 excelApp.AddData(nightCol, temperatureRow, currentDay.nightWeather.temperature, HorizontalAlignment.Center);
 
-                excelApp.AddData(dayCol, precipitationRow, currentDay.dayWeather.precipitation, HorizontalAlignment.Center);
-                excelApp.AddData(nightCol, precipitationRow, currentDay.nightWeather.precipitation, HorizontalAlignment.Center);
+                if (currentDay.dayWeather.precipitation != null)
+                {
+                    excelApp.AddData(dayCol, precipitationRow, currentDay.dayWeather.precipitation, HorizontalAlignment.Center);
+                }
+                if (currentDay.nightWeather.precipitation != null)
+                {
+                    excelApp.AddData(nightCol, precipitationRow, currentDay.nightWeather.precipitation, HorizontalAlignment.Center);
+                }
 
-                excelApp.AddData(dayCol, windRow, currentDay.dayWeather.wind.GetWindData(), HorizontalAlignment.Center);
-                excelApp.AddData(nightCol, windRow, currentDay.nightWeather.wind.GetWindData(), HorizontalAlignment.Center);
+                var dayWind = currentDay.dayWeather.wind.GetWindData();
+                if (dayWind != null)
+                {
+                    excelApp.AddData(dayCol, windRow, dayWind, HorizontalAlignment.Center);
+                }
+                var nightWind = currentDay.nightWeather.wind.GetWindData();
+                if (nightWind != null)
+                {
+                    excelApp.AddData(nightCol, windRow, nightWind, HorizontalAlignment.Center);
+                }
             }
         }
 
-        private static void MergeNeededCell(CreateExcelDoc excelApp)
+        private static void MergeNeededCell(CreateExcelDoc excelApp, DataSource dataSource)
         {
             // Строки
             excelApp.Merge("D2", "E2");
@@ -253,19 +285,59 @@ namespace WeatherCollector
             // Столбцы
             excelApp.Merge("C2", "C3");
             excelApp.Merge("B2", "B3");
-            for (int rowCount = 4; rowCount < 40; rowCount += 3)
+            var rowSize = 0;
+            switch (dataSource)
+            {
+                case DataSource.GidroMC:
+                    rowSize = 40;
+                    break;
+                case DataSource.Gismeteo:
+                    rowSize = 13;
+                    break;
+            }
+            for (int rowCount = 4; rowCount < rowSize; rowCount += 3)
             {
                 excelApp.Merge("B" + rowCount.ToString(), "B" + (rowCount + 2).ToString());
             }
             excelApp.Merge("B4", "B6");
+
+            // Строки по дням
+            if (dataSource == DataSource.Gismeteo)
+            {
+                for (int countI = 0; countI < 3; countI++)
+                {
+                    var startRowList = new List<int>() { 5,6 };
+                    foreach (var startRow in startRowList)
+                    {
+                        var rowCount = startRow + countI * 3;
+                        for (int countJ = 0; countJ < numberForecastDays; countJ++)
+                        {
+                            // (char)65 == A, 68 == D
+                            var colCountFirst = (char)(68 + countJ * 2);
+                            var colCountSecond = (char)(69 + countJ * 2);
+                            excelApp.Merge(colCountFirst + rowCount.ToString(), colCountSecond + rowCount.ToString());
+                        }
+                    }
+                }
+            }
         }
 
-        private void BoldNeededCell(CreateExcelDoc excelApp)
+        private void BoldNeededCell(CreateExcelDoc excelApp, DataSource dataSource)
         {
             var mecricColumn = 3;
             var metricNumber = 3;
             var firstMecticRow = 5;
-            for (var count = 0; count < stationListGidroMC.Count; count++)
+            var stationListSize = 0;
+            switch (dataSource)
+            {
+                case DataSource.GidroMC:
+                    stationListSize = stationListGidroMC.Count;
+                    break;
+                case DataSource.Gismeteo:
+                    stationListSize = stationListGismeteo.Count;
+                    break;
+            }
+            for (var count = 0; count < stationListSize; count++)
             {
                 var boltRow = count * metricNumber + firstMecticRow;
                 excelApp.EntireRowDoBold(boltRow, mecricColumn);
@@ -294,7 +366,7 @@ namespace WeatherCollector
                     url = "https://meteoinfo.ru/forecasts5000/russia/nizhegorodskaya-area/" + station;
                     break;
                 case DataSource.Gismeteo:
-                    url = "https://www.gismeteo.ru/weather-" + station + "/3-days/";
+                    url = "https://www.gismeteo.ru/weather-" + station + "/10-days/";
                     break;
             }
 
@@ -336,12 +408,20 @@ namespace WeatherCollector
         private void ParseHtmlStringGismeteo(string source, string station)
         {
             currentWeekWeather = new WeekWeather();
+
             FindTemperatureGismeteo(source);
             FindPrecipitationGismeteo(source);
             FindWindDirectionGismeteo(source);
             FindWindSpeedGismeteo(source);
 
-            Console.WriteLine();
+            weatherDict[station] = currentWeekWeather;
+
+            progressCount += 10;
+            progressBar.BeginInvoke(new MyIntDelegate(DelegateMethod), progressCount);
+            if (progressCount == 50)
+            {
+                button2.BeginInvoke(new MyBoolDelegate(DelegateMethodButton2), true);
+            }
         }
 
         private void ParseHtmlStringGidroMC(string source, string station)
@@ -613,17 +693,17 @@ namespace WeatherCollector
             var commonKeyForParametr = "widget-row-chart widget-row-chart-temperature";
             var beginKeys = new List<string>() { "unit_temperature_c\">" };
             var endKey = '<';
-            var dataAmount = numberForecastDaysOtherSource * 4;
+            var dataAmount = (numberForecastDaysMax + 1) * 2;
             var temperatureParametrs = FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
             for (int count = 0; count < temperatureParametrs.Count; count++)
             {
-                switch (count % 4)
+                switch (count % 2)
                 {
                     case 0:
-                        currentWeekWeather.SetTemperature(temperatureParametrs[count], count / 4, false);
+                        currentWeekWeather.SetTemperature(temperatureParametrs[count], count / 2, true);
                         break;
-                    case 2:
-                        currentWeekWeather.SetTemperature(temperatureParametrs[count], count / 4, true);
+                    case 1:
+                        currentWeekWeather.SetTemperature(temperatureParametrs[count], count / 2, false);
                         break;
                 }
             }
@@ -634,19 +714,11 @@ namespace WeatherCollector
             var commonKeyForParametr = "Осадки, мм";
             var beginKeys = new List<string>() { "item-unit unit-blue\">", "item-unit\">" };
             var endKey = '<';
-            var dataAmount = numberForecastDaysOtherSource * 4;
+            var dataAmount = numberForecastDaysMax + 1;
             var precipitationParametrs = FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
             for (int count = 0; count < precipitationParametrs.Count; count++)
             {
-                switch (count % 4)
-                {
-                    case 0:
-                        currentWeekWeather.SetPrecipitation(precipitationParametrs[count], count / 4, false);
-                        break;
-                    case 2:
-                        currentWeekWeather.SetPrecipitation(precipitationParametrs[count], count / 4, true);
-                        break;
-                }
+                currentWeekWeather.SetPrecipitation(precipitationParametrs[count], count, false);
             }
         }
 
@@ -655,19 +727,11 @@ namespace WeatherCollector
             var commonKeyForParametr = "widget-row-wind-direction";
             var beginKeys = new List<string>() { "\"direction\">" };
             var endKey = '<';
-            var dataAmount = numberForecastDaysOtherSource * 4;
+            var dataAmount = numberForecastDaysMax + 1;
             var precipitationParametrs = FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
             for (int count = 0; count < precipitationParametrs.Count; count++)
             {
-                switch (count % 4)
-                {
-                    case 0:
-                        currentWeekWeather.SetWindDirection(precipitationParametrs[count], count / 4, false);
-                        break;
-                    case 2:
-                        currentWeekWeather.SetWindDirection(precipitationParametrs[count], count / 4, true);
-                        break;
-                }
+                currentWeekWeather.SetWindDirection(precipitationParametrs[count], count, false);
             }
         }
 
@@ -676,19 +740,11 @@ namespace WeatherCollector
             var commonKeyForParametr = "widget-row-wind-speed\"";
             var beginKeys = new List<string>() { "unit_wind_m_s\">" };
             var endKey = ' ';
-            var dataAmount = numberForecastDaysOtherSource * 4;
+            var dataAmount = numberForecastDaysMax + 1;
             var precipitationParametrs = FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
             for (int count = 0; count < precipitationParametrs.Count; count++)
             {
-                switch (count % 4)
-                {
-                    case 0:
-                        currentWeekWeather.SetWindSpeed(precipitationParametrs[count], count / 4, false);
-                        break;
-                    case 2:
-                        currentWeekWeather.SetWindSpeed(precipitationParametrs[count], count / 4, true);
-                        break;
-                }
+                currentWeekWeather.SetWindSpeed(precipitationParametrs[count], count, false);
             }
         }
 
