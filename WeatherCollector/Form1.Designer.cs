@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.button1 = new System.Windows.Forms.Button();
+            this.downloadWeatherButton = new System.Windows.Forms.Button();
             this.progressBar = new System.Windows.Forms.ProgressBar();
-            this.button2 = new System.Windows.Forms.Button();
+            this.createDocButton = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -41,15 +41,15 @@
             this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // button1
+            // downloadWeatherButton
             // 
-            this.button1.Location = new System.Drawing.Point(199, 182);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(256, 88);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Скачать";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.downloadWeatherButton.Location = new System.Drawing.Point(199, 182);
+            this.downloadWeatherButton.Name = "downloadWeatherButton";
+            this.downloadWeatherButton.Size = new System.Drawing.Size(256, 88);
+            this.downloadWeatherButton.TabIndex = 0;
+            this.downloadWeatherButton.Text = "Скачать";
+            this.downloadWeatherButton.UseVisualStyleBackColor = true;
+            this.downloadWeatherButton.Click += new System.EventHandler(this.downloadWeatherButton_Click);
             // 
             // progressBar
             // 
@@ -59,16 +59,16 @@
             this.progressBar.Size = new System.Drawing.Size(870, 29);
             this.progressBar.TabIndex = 1;
             // 
-            // button2
+            // createDocButton
             // 
-            this.button2.Enabled = false;
-            this.button2.Location = new System.Drawing.Point(461, 182);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(256, 88);
-            this.button2.TabIndex = 2;
-            this.button2.Text = "Сформировать таблицу";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.createDocButton.Enabled = false;
+            this.createDocButton.Location = new System.Drawing.Point(461, 182);
+            this.createDocButton.Name = "createDocButton";
+            this.createDocButton.Size = new System.Drawing.Size(256, 88);
+            this.createDocButton.TabIndex = 2;
+            this.createDocButton.Text = "Сформировать таблицу";
+            this.createDocButton.UseVisualStyleBackColor = true;
+            this.createDocButton.Click += new System.EventHandler(this.createDocButton_Click);
             // 
             // button3
             // 
@@ -88,7 +88,6 @@
             this.label1.Size = new System.Drawing.Size(94, 20);
             this.label1.TabIndex = 4;
             this.label1.Text = "Инструкция:";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // label2
             // 
@@ -149,9 +148,9 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.button3);
-            this.Controls.Add(this.button2);
+            this.Controls.Add(this.createDocButton);
             this.Controls.Add(this.progressBar);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.downloadWeatherButton);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.Text = "Собиратель Погоды 2.0.0";
@@ -162,9 +161,9 @@
 
         #endregion
 
-        private Button button1;
+        private Button downloadWeatherButton;
         private ProgressBar progressBar;
-        private Button button2;
+        private Button createDocButton;
         private Button button3;
         private Label label1;
         private Label label2;

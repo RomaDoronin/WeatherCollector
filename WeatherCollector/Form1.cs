@@ -1,27 +1,9 @@
 using System.Net;
 using System.Text;
+using WeatherCollector.WeatherDataSource;
 
 namespace WeatherCollector
 {
-    public struct ParametrProperty
-    {
-        string value;
-        int dayCount;
-        bool isDay;
-
-        public ParametrProperty(string value, int dayCount, bool isDay)
-        {
-            this.value = value;
-            this.dayCount = dayCount;
-            this.isDay = isDay;
-        }
-    }
-
-    enum DataSource
-    {
-        GidroMC,
-        Gismeteo
-    }
     enum FindState
     {
         NotFind,
@@ -29,33 +11,10 @@ namespace WeatherCollector
         Found
     }
 
-    public partial class Form1 : Form
+    public partial class Form1 : Form, IProgressBarInteraction
     {
         const int numberForecastDaysMax = 6;
         static int numberForecastDays = 6;
-
-        private List<String> stationListGidroMC = new()
-        {
-            "sakunja",
-            "vetluga",
-            "krasnye-baki",
-            "voskresenskoe",
-            "volzskaja-gmo",
-            "niznij-novgoro",
-            "lyskovo",
-            "arzamas",
-            "pavlovo",
-            "sergac",
-            "vyksa",
-            "lukojanov"
-        };
-
-        private List<String> stationListGismeteo = new()
-        {
-            "shakhunya-4322",
-            "nizhny-novgorod-4355",
-            "vyksa-4375"
-        };
 
         private readonly Dictionary<String, String> stationDict = new()
         {
@@ -94,6 +53,9 @@ namespace WeatherCollector
         };
 
         private Dictionary<String, WeekWeather> weatherDict;
+        private GismeteoWeather gismeteoWeather;
+        private GidroMCWeather gidroMCWeather;
+        private WeatherProvider weatherProvider;
 
         private WeekWeather currentWeekWeather;
 
@@ -103,6 +65,8 @@ namespace WeatherCollector
             SetupComboBox();
 
             weatherDict = new Dictionary<String, WeekWeather>();
+            gismeteoWeather = new GismeteoWeather();
+            gidroMCWeather = new GidroMCWeather();
         }
 
         private void SetupComboBox()
@@ -123,16 +87,16 @@ namespace WeatherCollector
             this.progressBar.Value = value;
         }
 
-        public void DelegateMethodButton2(bool value)
+        public void DelegateMethodcreateDocButton(bool value)
         {
-            this.button2.Enabled = value;
+            this.createDocButton.Enabled = value;
         }
 
         private int progressCount = 0;
 
-        private void button1_Click(object sender, EventArgs e)
+        private void downloadWeatherButton_Click(object sender, EventArgs e)
         {
-            button1.Enabled = false;
+            downloadWeatherButton.Enabled = false;
             progressCount += 20;
             progressBar.BeginInvoke(new MyIntDelegate(DelegateMethod), progressCount);
 
@@ -141,26 +105,32 @@ namespace WeatherCollector
 
         void GetDataFromStations()
         {
-            //foreach (var station in stationListGidroMC)
-            //{
-            //    SendRequestForWeather(DataSource.GidroMC, station);
-            //}
-            foreach (var station in stationListGismeteo)
-            {
-                SendRequestForWeather(DataSource.Gismeteo, station);
-            }
+            //weatherProvider = new WeatherProvider(gismeteoWeather, this);
+            //weatherProvider.GetDataFromStations();
+
+            weatherProvider = new WeatherProvider(gidroMCWeather, this);
+            weatherProvider.GetDataFromStations();
         }
 
+        public void IncrementProgressCount(int value, string url)
+        {
+            progressCount += 10;
+            progressBar.BeginInvoke(new MyIntDelegate(DelegateMethod), progressCount);
+            if (progressCount == 20 + value * 10)
+            {
+                createDocButton.BeginInvoke(new MyBoolDelegate(DelegateMethodcreateDocButton), true);
+            }
+        }
 
         async Task GetDataFromStationsAsync()
         {
             await Task.Run(() => GetDataFromStations());
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void createDocButton_Click(object sender, EventArgs e)
         {
             UpdateNumberForecastDays();
-            CreateDoc(DataSource.Gismeteo);
+            CreateDoc();
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -173,41 +143,23 @@ namespace WeatherCollector
             numberForecastDays = Int16.Parse(numberForecastDaysComboBox.SelectedItem.ToString());
         }
 
-        private void CreateDoc(DataSource dataSource)
+        private void CreateDoc()
         {
             CreateExcelDoc excelApp = new CreateExcelDoc();
-            var stationListSize = 0;
-            switch (dataSource)
+            var stationList = weatherProvider.GetStationList();
+            for (var stationCount = 0; stationCount < stationList.Count; stationCount++)
             {
-                case DataSource.GidroMC:
-                    stationListSize = stationListGidroMC.Count;
-                    break;
-                case DataSource.Gismeteo:
-                    stationListSize = stationListGismeteo.Count;
-                    break;
-            }
-            for (var stationCount = 0; stationCount < stationListSize; stationCount++)
-            {
-                var stationKey = "";
-                switch (dataSource)
-                {
-                    case DataSource.GidroMC:
-                        stationKey = stationListGidroMC[stationCount];
-                        break;
-                    case DataSource.Gismeteo:
-                        stationKey = stationListGismeteo[stationCount];
-                        break;
-                }
+                var stationKey = stationList[stationCount];
                 FillDoc(excelApp, stationCount, stationKey);
             }
-            MergeNeededCell(excelApp, dataSource);
-            BoldNeededCell(excelApp, dataSource);
+            MergeNeededCell(excelApp);
+            BoldNeededCell(excelApp);
             SetColumnWidth(excelApp);
         }
 
         private void FillDoc(CreateExcelDoc excelApp, int stationCount, string stationKey)
         {
-            var weekWeather = weatherDict[stationKey];
+            var weekWeather = weatherProvider.weatherDict[stationKey];
 
             var temperatureRow = 4 + stationCount * 3;
             excelApp.AddData(3, temperatureRow, "Температура, °C");
@@ -263,7 +215,7 @@ namespace WeatherCollector
             }
         }
 
-        private static void MergeNeededCell(CreateExcelDoc excelApp, DataSource dataSource)
+        private void MergeNeededCell(CreateExcelDoc excelApp)
         {
             // Строки
             excelApp.Merge("D2", "E2");
@@ -285,16 +237,8 @@ namespace WeatherCollector
             // Столбцы
             excelApp.Merge("C2", "C3");
             excelApp.Merge("B2", "B3");
-            var rowSize = 0;
-            switch (dataSource)
-            {
-                case DataSource.GidroMC:
-                    rowSize = 40;
-                    break;
-                case DataSource.Gismeteo:
-                    rowSize = 13;
-                    break;
-            }
+            var stationNumber = weatherProvider.GetStationList().Count;
+            var rowSize = 4 + stationNumber * 3;
             for (int rowCount = 4; rowCount < rowSize; rowCount += 3)
             {
                 excelApp.Merge("B" + rowCount.ToString(), "B" + (rowCount + 2).ToString());
@@ -302,11 +246,11 @@ namespace WeatherCollector
             excelApp.Merge("B4", "B6");
 
             // Строки по дням
-            if (dataSource == DataSource.Gismeteo)
+            if (!weatherProvider.IsDivideDayNight())
             {
                 for (int countI = 0; countI < 3; countI++)
                 {
-                    var startRowList = new List<int>() { 5,6 };
+                    var startRowList = new List<int>() { 5, 6 };
                     foreach (var startRow in startRowList)
                     {
                         var rowCount = startRow + countI * 3;
@@ -322,22 +266,13 @@ namespace WeatherCollector
             }
         }
 
-        private void BoldNeededCell(CreateExcelDoc excelApp, DataSource dataSource)
+        private void BoldNeededCell(CreateExcelDoc excelApp)
         {
             var mecricColumn = 3;
             var metricNumber = 3;
             var firstMecticRow = 5;
-            var stationListSize = 0;
-            switch (dataSource)
-            {
-                case DataSource.GidroMC:
-                    stationListSize = stationListGidroMC.Count;
-                    break;
-                case DataSource.Gismeteo:
-                    stationListSize = stationListGismeteo.Count;
-                    break;
-            }
-            for (var count = 0; count < stationListSize; count++)
+            var stationNumber = weatherProvider.GetStationList().Count;
+            for (var count = 0; count < stationNumber; count++)
             {
                 var boltRow = count * metricNumber + firstMecticRow;
                 excelApp.EntireRowDoBold(boltRow, mecricColumn);
@@ -354,462 +289,6 @@ namespace WeatherCollector
         {
             excelApp.SetColumnWidth(2, 22);
             excelApp.SetColumnWidth(3, 15);
-        }
-
-        private void SendRequestForWeather(DataSource dataSource, string station)
-        {
-            String url = "";
-
-            switch (dataSource)
-            {
-                case DataSource.GidroMC:
-                    url = "https://meteoinfo.ru/forecasts5000/russia/nizhegorodskaya-area/" + station;
-                    break;
-                case DataSource.Gismeteo:
-                    url = "https://www.gismeteo.ru/weather-" + station + "/10-days/";
-                    break;
-            }
-
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
-            Console.WriteLine("Content length is" + response.ContentLength);
-            Console.WriteLine("Content type is" + response.ContentType);
-
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                Console.WriteLine("Всё норм.");
-
-                // Get the stream associated with the response.
-                Stream receiveStream = response.GetResponseStream();
-
-                // Pipes the stream to a higher level stream reader with the required encoding format.
-                StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8);
-
-                var str = readStream.ReadToEnd();
-                switch (dataSource)
-                {
-                    case DataSource.GidroMC:
-                        ParseHtmlStringGidroMC(str, station);
-                        break;
-                    case DataSource.Gismeteo:
-                        ParseHtmlStringGismeteo(str, station);
-                        break;
-                }
-                readStream.Close();
-            }
-            else if (response.StatusCode == HttpStatusCode.NotFound)
-            {
-                Console.WriteLine("Такой страницы нет.");
-            }
-            response.Close();
-        }
-
-        private void ParseHtmlStringGismeteo(string source, string station)
-        {
-            currentWeekWeather = new WeekWeather();
-
-            FindTemperatureGismeteo(source);
-            FindPrecipitationGismeteo(source);
-            FindWindDirectionGismeteo(source);
-            FindWindSpeedGismeteo(source);
-
-            weatherDict[station] = currentWeekWeather;
-
-            progressCount += 10;
-            progressBar.BeginInvoke(new MyIntDelegate(DelegateMethod), progressCount);
-            if (progressCount == 50)
-            {
-                button2.BeginInvoke(new MyBoolDelegate(DelegateMethodButton2), true);
-            }
-        }
-
-        private void ParseHtmlStringGidroMC(string source, string station)
-        {
-            currentWeekWeather = new WeekWeather();
-
-            FindTemperature(source);
-            FindPrecipitation(source);
-            FindWindDirection(source);
-            FindWindSpeed(source);
-
-            weatherDict[station] = currentWeekWeather;
-
-            progressCount += 10;
-            progressBar.BeginInvoke(new MyIntDelegate(DelegateMethod), progressCount);
-            if (progressCount == 140)
-            {
-                button2.BeginInvoke(new MyBoolDelegate(DelegateMethodButton2), true);
-            }
-        }
-
-        private void FindWindSpeed(string source)
-        {
-            var key = "Ветер, м/с</div>";
-            int dayCount = 0;
-            var findDayWind = FindState.NotFind;
-            var findNightWind = FindState.NotFind;
-
-            for (int i = 0; i < source.Length - key.Length; i++)
-            {
-                if (findDayWind == FindState.Finding || findNightWind == FindState.Finding)
-                {
-                    var nobrKey = "<nobr>";
-                    if (CollectSubstring(nobrKey, source, i))
-                    {
-                        int startIndex = i + nobrKey.Length;
-                        string stringWind = "";
-                        char ch = source[startIndex];
-                        int count = 0;
-                        while (ch != '<')
-                        {
-                            stringWind += ch;
-                            count++;
-                            ch = source[startIndex + count];
-                        }
-
-                        if (findDayWind == FindState.Finding)
-                        {
-                            currentWeekWeather.SetWindSpeed(stringWind, dayCount, true);
-                        }
-                        else if (findNightWind == FindState.Finding)
-                        {
-                            currentWeekWeather.SetWindSpeed(stringWind, dayCount, false);
-                        }
-                        if (dayCount == numberForecastDaysMax)
-                        {
-                            if (findDayWind == FindState.Finding)
-                            {
-                                findDayWind = FindState.Found;
-                            }
-                            else if (findNightWind == FindState.Finding)
-                            {
-                                findNightWind = FindState.Found;
-                            }
-                            dayCount = 1;
-                            continue;
-                        }
-                        dayCount++;
-                    }
-                }
-                else if (CollectSubstring(key, source, i))
-                {
-                    if (findDayWind == FindState.NotFind)
-                    {
-                        findDayWind = FindState.Finding;
-                    }
-                    if (findDayWind == FindState.Found && findNightWind == FindState.NotFind)
-                    {
-                        findNightWind = FindState.Finding;
-                    }
-                }
-            }
-        }
-
-        private void FindWindDirection(string source)
-        {
-            var key = "Ветер, м/с</div>";
-            int dayCount = 0;
-            var findDayWind = FindState.NotFind;
-            var findNightWind = FindState.NotFind;
-
-            for (int i = 0; i < source.Length - key.Length; i++)
-            {
-                if (findDayWind == FindState.Finding || findNightWind == FindState.Finding)
-                {
-                    var titleKey = "<span title=\"";
-                    if (CollectSubstring(titleKey, source, i))
-                    {
-                        int startIndex = i + titleKey.Length;
-                        string stringWind = "";
-                        char ch = source[startIndex];
-                        int count = 0;
-                        while (ch != '\"')
-                        {
-                            stringWind += ch;
-                            count++;
-                            ch = source[startIndex + count];
-                        }
-
-                        if (findDayWind == FindState.Finding)
-                        {
-                            currentWeekWeather.SetWindDirection(stringWind, dayCount, true);
-                        }
-                        else if (findNightWind == FindState.Finding)
-                        {
-                            currentWeekWeather.SetWindDirection(stringWind, dayCount, false);
-                        }
-                        if (dayCount == numberForecastDaysMax)
-                        {
-                            if (findDayWind == FindState.Finding)
-                            {
-                                findDayWind = FindState.Found;
-                            }
-                            else if (findNightWind == FindState.Finding)
-                            {
-                                findNightWind = FindState.Found;
-                            }
-                            dayCount = 1;
-                            continue;
-                        }
-                        dayCount++;
-                    }
-                }
-                else if (CollectSubstring(key, source, i))
-                {
-                    if (findDayWind == FindState.NotFind)
-                    {
-                        findDayWind = FindState.Finding;
-                    }
-                    if (findDayWind == FindState.Found && findNightWind == FindState.NotFind)
-                    {
-                        findNightWind = FindState.Finding;
-                    }
-                }
-            }
-        }
-
-        private void FindPrecipitation(string source)
-        {
-            var key = "Осадки, мм (вероятность)";
-            int dayCount = 0;
-            var findDayPrecipitation = FindState.NotFind;
-            var findNightPrecipitation = FindState.NotFind;
-
-            for (int i = 0; i < source.Length - key.Length; i++)
-            {
-                if (findDayPrecipitation == FindState.Finding || findNightPrecipitation == FindState.Finding)
-                {
-                    var nobrKey = "<nobr>";
-                    if (CollectSubstring(nobrKey, source, i))
-                    {
-                        int startIndex = i + nobrKey.Length;
-                        string precipitation = "";
-                        char ch = source[startIndex];
-                        int count = 0;
-                        while (ch != '<' && ch != ')')
-                        {
-                            if (ch == '.')
-                            {
-                                precipitation += ',';
-                            } else
-                            {
-                                precipitation += ch;
-                            }
-                            count++;
-                            ch = source[startIndex + count];
-                        }
-
-                        if (precipitation.EndsWith('%'))
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            if (findDayPrecipitation == FindState.Finding)
-                            {
-                                currentWeekWeather.SetPrecipitation(precipitation, dayCount, true);
-                            }
-                            else if (findNightPrecipitation == FindState.Finding)
-                            {
-                                currentWeekWeather.SetPrecipitation(precipitation, dayCount, false);
-                            }
-                            if (dayCount == numberForecastDaysMax)
-                            {
-                                if (findDayPrecipitation == FindState.Finding)
-                                {
-                                    findDayPrecipitation = FindState.Found;
-                                }
-                                else if (findNightPrecipitation == FindState.Finding)
-                                {
-                                    findNightPrecipitation = FindState.Found;
-                                }
-                                dayCount = 1;
-                                continue;
-                            }
-                            dayCount++;
-                        }
-                    }
-                }
-                else if (CollectSubstring(key, source, i))
-                {
-                    if (findDayPrecipitation == FindState.NotFind)
-                    {
-                        findDayPrecipitation = FindState.Finding;
-                    }
-                    if (findDayPrecipitation == FindState.Found && findNightPrecipitation == FindState.NotFind)
-                    {
-                        findNightPrecipitation = FindState.Finding;
-                    }
-                }
-            }
-        }
-
-        private void FindTemperature(string source)
-        {
-            string key = "&deg";
-            int dayCount = 0;
-            bool isDay = true;
-            var size = source.Length - key.Length;
-
-            for (int i = 0; i < size; i++)
-            {
-                if (CollectSubstring(key, source, i))
-                {
-                    int ampersandPosition = i;
-                    var temperature = "";
-                    int count = 1;
-                    char ch = source[ampersandPosition - count];
-
-                    while (ch != '>')
-                    {
-                        temperature = ch + temperature;
-                        count++;
-                        ch = source[ampersandPosition - count];
-                    }
-
-                    if (isDay)
-                    {
-                        currentWeekWeather.SetTemperature(temperature, dayCount, isDay);
-                        dayCount++;
-                        isDay = false;
-                    }
-                    else
-                    {
-                        if (dayCount == numberForecastDaysMax + 1)
-                        {
-                            break;
-                        }
-                        currentWeekWeather.SetTemperature(temperature, dayCount, isDay);
-                        isDay = true;
-                    }
-                }
-            }
-        
-        }
-
-        private void FindTemperatureGismeteo(string source)
-        {
-            var commonKeyForParametr = "widget-row-chart widget-row-chart-temperature";
-            var beginKeys = new List<string>() { "unit_temperature_c\">" };
-            var endKey = '<';
-            var dataAmount = (numberForecastDaysMax + 1) * 2;
-            var temperatureParametrs = FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
-            for (int count = 0; count < temperatureParametrs.Count; count++)
-            {
-                switch (count % 2)
-                {
-                    case 0:
-                        currentWeekWeather.SetTemperature(temperatureParametrs[count], count / 2, true);
-                        break;
-                    case 1:
-                        currentWeekWeather.SetTemperature(temperatureParametrs[count], count / 2, false);
-                        break;
-                }
-            }
-        }
-
-        private void FindPrecipitationGismeteo(string source)
-        {
-            var commonKeyForParametr = "Осадки, мм";
-            var beginKeys = new List<string>() { "item-unit unit-blue\">", "item-unit\">" };
-            var endKey = '<';
-            var dataAmount = numberForecastDaysMax + 1;
-            var precipitationParametrs = FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
-            for (int count = 0; count < precipitationParametrs.Count; count++)
-            {
-                currentWeekWeather.SetPrecipitation(precipitationParametrs[count], count, false);
-            }
-        }
-
-        private void FindWindDirectionGismeteo(string source)
-        {
-            var commonKeyForParametr = "widget-row-wind-direction";
-            var beginKeys = new List<string>() { "\"direction\">" };
-            var endKey = '<';
-            var dataAmount = numberForecastDaysMax + 1;
-            var precipitationParametrs = FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
-            for (int count = 0; count < precipitationParametrs.Count; count++)
-            {
-                currentWeekWeather.SetWindDirection(precipitationParametrs[count], count, false);
-            }
-        }
-
-        private void FindWindSpeedGismeteo(string source)
-        {
-            var commonKeyForParametr = "widget-row-wind-speed\"";
-            var beginKeys = new List<string>() { "unit_wind_m_s\">" };
-            var endKey = ' ';
-            var dataAmount = numberForecastDaysMax + 1;
-            var precipitationParametrs = FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
-            for (int count = 0; count < precipitationParametrs.Count; count++)
-            {
-                currentWeekWeather.SetWindSpeed(precipitationParametrs[count], count, false);
-            }
-        }
-
-        private List<string> FindParametrs(string source, string commonKeyForParametr, List<string> beginKeys, char endKey, int dataAmount)
-        {
-            var result = new List<string>();
-            var dataCount = 1;
-            var findState = FindState.NotFind;
-
-            for (int i = 0; i < source.Length - commonKeyForParametr.Length; i++)
-            {
-                if (findState == FindState.Finding)
-                {
-                    foreach (var beginKey in beginKeys)
-                    {
-                        if (CollectSubstring(beginKey, source, i))
-                        {
-                            int startIndex = i + beginKey.Length;
-                            string stringParametr = "";
-                            char ch = source[startIndex];
-                            int count = 0;
-                            while (ch != endKey)
-                            {
-                                stringParametr += ch;
-                                count++;
-                                ch = source[startIndex + count];
-                            }
-
-                            result.Add(stringParametr);
-
-                            if (dataCount == dataAmount)
-                            {
-                                return result;
-                            }
-                            dataCount++;
-                        }
-                    }
-                }
-                else if (CollectSubstring(commonKeyForParametr, source, i))
-                {
-                    if (findState == FindState.NotFind)
-                    {
-                        findState = FindState.Finding;
-                    }
-                }
-            }
-
-            return result;
-        }
-
-        private bool CollectSubstring(string substring, string source, int index)
-        {
-            for (int i = 0; i < substring.Length; i++)
-            {
-                if (source[index + i] != substring[i])
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

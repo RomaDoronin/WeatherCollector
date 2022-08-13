@@ -1,6 +1,6 @@
 ﻿namespace WeatherCollector
 {
-    struct WeekWeather
+    public struct WeekWeather
     {
         public List<DayWeather> week;
 
@@ -91,7 +91,7 @@
         }
     }
 
-    struct DayWeather
+    public struct DayWeather
     {
         public int day;
         public int month;
@@ -107,7 +107,7 @@
         }
     }
 
-    struct Weather
+    public struct Weather
     {
         public string? temperature;
         public string? precipitation; // Осадки
@@ -121,7 +121,7 @@
         }
     }
 
-    struct Wind
+    public struct Wind
     {
         public string? speed;
         public string? direction;
