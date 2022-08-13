@@ -13,10 +13,11 @@ namespace WeatherCollector
 
     public partial class Form1 : Form, IProgressBarInteraction
     {
-        const int numberForecastDaysMax = 6;
-        static int numberForecastDays = 6;
+        private static int numberForecastDays = 6;
+        private static int progressBarStartOffset = 20;
+        private static int progressBarStep = 10;
 
-        private readonly Dictionary<String, String> stationDict = new()
+        private readonly Dictionary<string, string> stationDict = new()
         {
             { "sakunja", "Шахунья" },
             { "vetluga", "Ветлуга" },
@@ -36,7 +37,7 @@ namespace WeatherCollector
             { "vyksa-4375", "Выкса" }
         };
 
-        private readonly Dictionary<int, String> monthNumberDict = new()
+        private readonly Dictionary<int, string> monthNumberDict = new()
         {
             { 1, "января" },
             { 2, "февраля" },
@@ -52,44 +53,42 @@ namespace WeatherCollector
             { 12, "декабря" }
         };
 
-        private Dictionary<String, WeekWeather> weatherDict;
         private GismeteoWeather gismeteoWeather;
         private GidroMCWeather gidroMCWeather;
         private WeatherProvider weatherProvider;
-
-        private WeekWeather currentWeekWeather;
 
         public Form1()
         {
             InitializeComponent();
             SetupComboBox();
 
-            weatherDict = new Dictionary<String, WeekWeather>();
             gismeteoWeather = new GismeteoWeather();
             gidroMCWeather = new GidroMCWeather();
+
+            progressBar.Maximum = progressBarStartOffset + (gismeteoWeather.StationList.Count + gidroMCWeather.StationList.Count) * progressBarStep;
         }
 
         private void SetupComboBox()
         {
-            this.numberForecastDaysComboBox.Items.Add(3);
-            this.numberForecastDaysComboBox.Items.Add(4);
-            this.numberForecastDaysComboBox.Items.Add(5);
-            this.numberForecastDaysComboBox.Items.Add(6);
+            numberForecastDaysComboBox.Items.Add(3);
+            numberForecastDaysComboBox.Items.Add(4);
+            numberForecastDaysComboBox.Items.Add(5);
+            numberForecastDaysComboBox.Items.Add(6);
             
-            var index = this.numberForecastDaysComboBox.Items.IndexOf(numberForecastDays);
-            this.numberForecastDaysComboBox.SelectedIndex = index;
+            var index = numberForecastDaysComboBox.Items.IndexOf(numberForecastDays);
+            numberForecastDaysComboBox.SelectedIndex = index;
         }
 
         public delegate void MyIntDelegate(int value);
         public delegate void MyBoolDelegate(bool value);
         public void DelegateMethod(int value)
         {
-            this.progressBar.Value = value;
+            progressBar.Value = value;
         }
 
         public void DelegateMethodcreateDocButton(bool value)
         {
-            this.createDocButton.Enabled = value;
+            createDocButton.Enabled = value;
         }
 
         private int progressCount = 0;
@@ -97,26 +96,31 @@ namespace WeatherCollector
         private void downloadWeatherButton_Click(object sender, EventArgs e)
         {
             downloadWeatherButton.Enabled = false;
-            progressCount += 20;
+            progressCount += progressBarStartOffset;
             progressBar.BeginInvoke(new MyIntDelegate(DelegateMethod), progressCount);
 
             _ = GetDataFromStationsAsync();
         }
 
+        private Dictionary<string, WeekWeather> gidroMCoWeatherDict;
+        private Dictionary<string, WeekWeather> gismeteoWeatherDict;
+
         void GetDataFromStations()
         {
-            //weatherProvider = new WeatherProvider(gismeteoWeather, this);
-            //weatherProvider.GetDataFromStations();
+            weatherProvider = new WeatherProvider(gismeteoWeather, this);
+            weatherProvider.GetDataFromStations();
+            gismeteoWeatherDict = weatherProvider.weatherDict;
 
             weatherProvider = new WeatherProvider(gidroMCWeather, this);
             weatherProvider.GetDataFromStations();
+            gidroMCoWeatherDict = weatherProvider.weatherDict;
         }
 
-        public void IncrementProgressCount(int value, string url)
+        public void IncrementProgressCount()
         {
-            progressCount += 10;
+            progressCount += progressBarStep;
             progressBar.BeginInvoke(new MyIntDelegate(DelegateMethod), progressCount);
-            if (progressCount == 20 + value * 10)
+            if (progressCount == progressBar.Maximum)
             {
                 createDocButton.BeginInvoke(new MyBoolDelegate(DelegateMethodcreateDocButton), true);
             }
@@ -146,30 +150,47 @@ namespace WeatherCollector
         private void CreateDoc()
         {
             CreateExcelDoc excelApp = new CreateExcelDoc();
-            var stationList = weatherProvider.GetStationList();
-            for (var stationCount = 0; stationCount < stationList.Count; stationCount++)
-            {
-                var stationKey = stationList[stationCount];
-                FillDoc(excelApp, stationCount, stationKey);
-            }
-            MergeNeededCell(excelApp);
-            BoldNeededCell(excelApp);
-            SetColumnWidth(excelApp);
+            var currentCol = 2;
+            currentCol = CreateTabel(excelApp, currentCol, gidroMCoWeatherDict, gidroMCWeather);
+            CreateTabel(excelApp, currentCol + 1, gismeteoWeatherDict, gismeteoWeather);
         }
 
-        private void FillDoc(CreateExcelDoc excelApp, int stationCount, string stationKey)
+        private int CreateTabel(CreateExcelDoc excelApp, int startedRow, Dictionary<string, WeekWeather> weatherDict, IWeatherDataSource dataSource)
         {
-            var weekWeather = weatherProvider.weatherDict[stationKey];
+            FillTableHeader(excelApp, startedRow);
 
-            var temperatureRow = 4 + stationCount * 3;
-            excelApp.AddData(3, temperatureRow, "Температура, °C");
-            var precipitationRow = 5 + stationCount * 3;
-            excelApp.AddData(3, precipitationRow, "Осадки, мм");
-            var windRow = 6 + stationCount * 3;
-            excelApp.AddData(3, windRow, "Ветер, м/с");
+            var stationNumber = dataSource.StationList.Count;
+            for (var stationCount = 0; stationCount < stationNumber; stationCount++)
+            {
+                var stationKey = dataSource.StationList[stationCount];
+                var localizedStataion = stationDict[stationKey];
+                var weekWeather = weatherDict[stationKey];
+                FillDoc(excelApp, startedRow, stationCount, localizedStataion, weekWeather);
+            }
+            MergeNeededCell(excelApp, startedRow, stationNumber, dataSource.IsDivideDayNight);
+            BoldNeededCell(excelApp, startedRow, stationNumber);
+            SetColumnWidth(excelApp);
+
+            return startedRow + 2 + stationNumber * 3;
+        }
+
+        private static void FillTableHeader(CreateExcelDoc excelApp, int startedRow)
+        {
+            var territoryRow = startedRow;
+            excelApp.AddData(2, territoryRow, "Территория области", HorizontalAlignment.Center);
+            var parametersRow = startedRow;
+            excelApp.AddData(3, parametersRow, "Параметры", HorizontalAlignment.Center);
+            excelApp.EntireRowDoBold(startedRow, 3);
+        }
+
+        private void FillDoc(CreateExcelDoc excelApp, int startedRow, int stationCount, string localizedStataion, WeekWeather weekWeather)
+        {
+            int temperatureRow, precipitationRow, windRow;
+            FillParametrHeader(excelApp, startedRow, stationCount, out temperatureRow, out precipitationRow, out windRow);
+
             var colStart = 4;
 
-            excelApp.AddData(2, temperatureRow, stationDict[stationKey]);
+            excelApp.AddData(2, temperatureRow, localizedStataion);
 
             for (var dayCount = 0; dayCount < numberForecastDays; dayCount++)
             {
@@ -184,9 +205,9 @@ namespace WeatherCollector
                     stringDay = stringDay.Length == 1 ? '0' + stringDay : stringDay;
                     var date = stringDay + " " + monthNumberDict[currentDay.month];
                     var dateCol = colStart + dayCount * 2;
-                    excelApp.AddData(dateCol, 2, date, HorizontalAlignment.Center);
-                    excelApp.AddData(dayCol, 3, "День", HorizontalAlignment.Center);
-                    excelApp.AddData(nightCol, 3, "Ночь", HorizontalAlignment.Center);
+                    excelApp.AddData(dateCol, startedRow, date, HorizontalAlignment.Center);
+                    excelApp.AddData(dayCol, startedRow + 1, "День", HorizontalAlignment.Center);
+                    excelApp.AddData(nightCol, startedRow + 1, "Ночь", HorizontalAlignment.Center);
                 }
 
                 // Занесение данных о погоде
@@ -215,43 +236,44 @@ namespace WeatherCollector
             }
         }
 
-        private void MergeNeededCell(CreateExcelDoc excelApp)
+        private static void FillParametrHeader(CreateExcelDoc excelApp, int startedRow, int stationCount, out int temperatureRow, out int precipitationRow, out int windRow)
         {
-            // Строки
-            excelApp.Merge("D2", "E2");
-            excelApp.Merge("F2", "G2");
-            excelApp.Merge("H2", "I2");
-            if (numberForecastDays > 3)
+            temperatureRow = startedRow + 2 + stationCount * 3;
+            excelApp.AddData(3, temperatureRow, "Температура, °C");
+
+            precipitationRow = startedRow + 3 + stationCount * 3;
+            excelApp.AddData(3, precipitationRow, "Осадки, мм");
+
+            windRow = startedRow + 4 + stationCount * 3;
+            excelApp.AddData(3, windRow, "Ветер, м/с");
+        }
+
+        private void MergeNeededCell(CreateExcelDoc excelApp, int startedRow, int stationNumber, bool isDivideDayNight)
+        {
+            for (var dayCount = 0; dayCount < numberForecastDays; dayCount++)
             {
-                excelApp.Merge("J2", "K2");
-            }
-            if (numberForecastDays > 4)
-            {
-                excelApp.Merge("L2", "M2");
-            }
-            if (numberForecastDays > 5)
-            {
-                excelApp.Merge("N2", "O2");
+                var firstColNumber = 68;
+                var firstCol = (char)(firstColNumber + dayCount * 2);
+                var secondCol = (char)(firstColNumber + dayCount * 2 + 1);
+                excelApp.Merge(firstCol + startedRow.ToString(), secondCol + startedRow.ToString());
             }
 
             // Столбцы
-            excelApp.Merge("C2", "C3");
-            excelApp.Merge("B2", "B3");
-            var stationNumber = weatherProvider.GetStationList().Count;
-            var rowSize = 4 + stationNumber * 3;
-            for (int rowCount = 4; rowCount < rowSize; rowCount += 3)
+            excelApp.Merge("B" + startedRow.ToString(), "B" + (startedRow + 1).ToString());
+            excelApp.Merge("C" + startedRow.ToString(), "C" + (startedRow + 1).ToString());
+            var rowSize = startedRow + 2 + stationNumber * 3;
+            for (int rowCount = startedRow + 2; rowCount < rowSize; rowCount += 3)
             {
                 excelApp.Merge("B" + rowCount.ToString(), "B" + (rowCount + 2).ToString());
             }
-            excelApp.Merge("B4", "B6");
 
             // Строки по дням
-            if (!weatherProvider.IsDivideDayNight())
+            if (!isDivideDayNight)
             {
                 for (int countI = 0; countI < 3; countI++)
                 {
-                    var startRowList = new List<int>() { 5, 6 };
-                    foreach (var startRow in startRowList)
+                    var startRowList = new List<int>() { startedRow + 3, startedRow + 4 };
+                    foreach (var startRow in startRowList)  
                     {
                         var rowCount = startRow + countI * 3;
                         for (int countJ = 0; countJ < numberForecastDays; countJ++)
@@ -266,22 +288,19 @@ namespace WeatherCollector
             }
         }
 
-        private void BoldNeededCell(CreateExcelDoc excelApp)
+        private void BoldNeededCell(CreateExcelDoc excelApp, int startedRow, int stationNumber)
         {
             var mecricColumn = 3;
             var metricNumber = 3;
-            var firstMecticRow = 5;
-            var stationNumber = weatherProvider.GetStationList().Count;
+            var firstMecticRow = startedRow + 3;
             for (var count = 0; count < stationNumber; count++)
             {
                 var boltRow = count * metricNumber + firstMecticRow;
                 excelApp.EntireRowDoBold(boltRow, mecricColumn);
             }
 
-            var dateRow = 2;
-            var dayNightRow = 3;
-            var firstDataColumn = 4;
-            excelApp.EntireRowDoBold(dateRow, firstDataColumn);
+            var dayNightRow = startedRow + 1;
+            var firstDataColumn = 2;
             excelApp.EntireRowDoBold(dayNightRow, firstDataColumn);
         }
 

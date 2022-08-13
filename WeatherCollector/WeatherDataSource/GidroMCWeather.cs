@@ -23,6 +23,7 @@ namespace WeatherCollector.WeatherDataSource
             "vyksa",
             "lukojanov"
         };
+        public bool IsDivideDayNight => true;
 
         public string GetUrl(string station)
         {
@@ -273,7 +274,5 @@ namespace WeatherCollector.WeatherDataSource
                 }
             }
         }
-
-        public bool IsDivideDayNight() => true;
     }
 }

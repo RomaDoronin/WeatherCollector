@@ -10,10 +10,11 @@ namespace WeatherCollector.WeatherDataSource
     {
         public List<string> StationList => new List<string>()
         {
-            //"shakhunya-4322",
+            "shakhunya-4322",
             "nizhny-novgorod-4355",
-            //"vyksa-4375"
+            "vyksa-4375"
         };
+        public bool IsDivideDayNight => false;
 
         public string GetUrl(string station)
         {
@@ -70,7 +71,7 @@ namespace WeatherCollector.WeatherDataSource
         public void FindWindSpeed(string source, WeekWeather currentWeekWeather)
         {
             var commonKeyForParametr = "widget-row-wind-speed\"";
-            var beginKeys = new List<string>() { "unit_wind_m_s\">\n" };
+            var beginKeys = new List<string>() { "unit_wind_m_s\">\n", "unit_wind_m_s warning\">\n" };
             var endKey = '\n';
             var dataAmount = WeatherProvider.numberForecastDaysMax + 1;
             var precipitationParametrs = WeatherProvider.FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
@@ -80,7 +81,5 @@ namespace WeatherCollector.WeatherDataSource
                 currentWeekWeather.SetWindSpeed(speed, count, false);
             }
         }
-
-        public bool IsDivideDayNight() => false;
     }
 }

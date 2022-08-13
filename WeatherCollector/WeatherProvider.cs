@@ -10,18 +10,18 @@ namespace WeatherCollector
     public interface IWeatherDataSource
     {
         List<String> StationList { get; }
+        bool IsDivideDayNight { get; }
 
         string GetUrl(string station);
         void FindTemperature(string source, WeekWeather currentWeekWeather);
         void FindPrecipitation(string source, WeekWeather currentWeekWeather);
         void FindWindDirection(string source, WeekWeather currentWeekWeather);
         void FindWindSpeed(string source, WeekWeather currentWeekWeather);
-        bool IsDivideDayNight();
     }
 
     public interface IProgressBarInteraction
     {
-        void IncrementProgressCount(int value, string url);
+        void IncrementProgressCount();
     }
 
     public class WeatherProvider
@@ -43,13 +43,9 @@ namespace WeatherCollector
             foreach (var station in dataSource.StationList)
             {
                 SendRequestForWeather(station);
-                progressBarInteraction.IncrementProgressCount(dataSource.StationList.Count, dataSource.GetUrl(station));
+                progressBarInteraction.IncrementProgressCount();
             }
         }
-
-        public List<String> GetStationList() => dataSource.StationList;
-
-        public bool IsDivideDayNight() => dataSource.IsDivideDayNight();
 
         private void SendRequestForWeather(string station)
         {
