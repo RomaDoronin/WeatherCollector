@@ -6,19 +6,17 @@ using System.Threading.Tasks;
 
 namespace WeatherCollector.WeatherDataSource
 {
-    public class GismeteoWeather : IWeatherDataSource
+    public class VentuskyWeather
     {
         public List<string> StationList => new List<string>()
         {
-            "shakhunya-4322",
-            "nizhny-novgorod-4355",
-            "vyksa-4375"
+            ""
         };
         public bool IsDivideDayNight => false;
 
         public string GetUrl(string station)
         {
-            return "https://www.gismeteo.ru/weather-" + station + "/10-days/";
+            return "https://www.ventusky.com/ru/" + station + "#forecast";
         }
 
         public void FindTemperature(string source, WeekWeather currentWeekWeather)
@@ -28,16 +26,15 @@ namespace WeatherCollector.WeatherDataSource
             var endKey = '<';
             var dataAmount = (WeatherProvider.numberForecastDaysMax + 1) * 2;
             var temperatureParametrs = WeatherProvider.FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
-            for (int count = 1; count < temperatureParametrs.Count; count++)
+            for (int count = 0; count < temperatureParametrs.Count; count++)
             {
-                var dayIndex = (count + 1) / 2;
                 switch (count % 2)
                 {
                     case 0:
-                        currentWeekWeather.SetTemperature(temperatureParametrs[count], dayIndex, true);
+                        currentWeekWeather.SetTemperature(temperatureParametrs[count], count / 2, true);
                         break;
                     case 1:
-                        currentWeekWeather.SetTemperature(temperatureParametrs[count], dayIndex, false);
+                        currentWeekWeather.SetTemperature(temperatureParametrs[count], count / 2, false);
                         break;
                 }
             }

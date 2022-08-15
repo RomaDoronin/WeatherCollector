@@ -19,6 +19,10 @@
 
         public void SetTemperature(string temperature, int dayIndex, bool isDay)
         {
+            if (dayIndex > 6)
+            {
+                return;
+            }
             DayWeather day = week[dayIndex];
             if (isDay)
             {
