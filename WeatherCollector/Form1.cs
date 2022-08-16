@@ -55,6 +55,8 @@ namespace WeatherCollector
 
         private GismeteoWeather gismeteoWeather;
         private GidroMCWeather gidroMCWeather;
+        private VentuskyWeather ventuskyWeather;
+
         private WeatherProvider weatherProvider;
 
         public Form1()
@@ -64,6 +66,7 @@ namespace WeatherCollector
 
             gismeteoWeather = new GismeteoWeather();
             gidroMCWeather = new GidroMCWeather();
+            ventuskyWeather = new VentuskyWeather();
 
             progressBar.Maximum = progressBarStartOffset + (gismeteoWeather.StationList.Count + gidroMCWeather.StationList.Count) * progressBarStep;
         }
@@ -104,16 +107,21 @@ namespace WeatherCollector
 
         private Dictionary<string, WeekWeather> gidroMCoWeatherDict;
         private Dictionary<string, WeekWeather> gismeteoWeatherDict;
+        private Dictionary<string, WeekWeather> ventuskyWeatherDict;
 
         void GetDataFromStations()
         {
-            weatherProvider = new WeatherProvider(gismeteoWeather, this);
-            weatherProvider.GetDataFromStations();
-            gismeteoWeatherDict = weatherProvider.weatherDict;
+            //weatherProvider = new WeatherProvider(gismeteoWeather, this);
+            //weatherProvider.GetDataFromStations();
+            //gismeteoWeatherDict = weatherProvider.weatherDict;
 
-            weatherProvider = new WeatherProvider(gidroMCWeather, this);
+            //weatherProvider = new WeatherProvider(gidroMCWeather, this);
+            //weatherProvider.GetDataFromStations();
+            //gidroMCoWeatherDict = weatherProvider.weatherDict;
+
+            weatherProvider = new WeatherProvider(ventuskyWeather, this);
             weatherProvider.GetDataFromStations();
-            gidroMCoWeatherDict = weatherProvider.weatherDict;
+            ventuskyWeatherDict = weatherProvider.weatherDict;
         }
 
         public void IncrementProgressCount()

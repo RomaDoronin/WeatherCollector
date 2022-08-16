@@ -2,6 +2,12 @@
 {
     public struct WeekWeather
     {
+        public enum TimeOfDay
+        {
+            Day,
+            Night
+        }
+
         public List<DayWeather> week;
 
         public WeekWeather()
@@ -17,14 +23,15 @@
             }
         }
 
-        public void SetTemperature(string temperature, int dayIndex, bool isDay)
+        public void SetTemperature(string temperature, int dayIndex, TimeOfDay timeOfDay)
         {
             if (dayIndex > 6)
             {
                 return;
             }
             DayWeather day = week[dayIndex];
-            if (isDay)
+
+            if (timeOfDay == TimeOfDay.Day)
             {
                 day.dayWeather.temperature = temperature;
             }
@@ -35,10 +42,15 @@
             week[dayIndex] = day;
         }
 
-        public void SetPrecipitation(string precipitation, int dayIndex, bool isDay)
+        public void SetPrecipitation(string precipitation, int dayIndex, TimeOfDay timeOfDay)
         {
+            if (dayIndex > 6)
+            {
+                return;
+            }
             DayWeather day = week[dayIndex];
-            if (isDay)
+
+            if (timeOfDay == TimeOfDay.Day)
             {
                 day.dayWeather.precipitation = precipitation;
             }
@@ -49,10 +61,15 @@
             week[dayIndex] = day;
         }
 
-        public void SetWindDirection(string windDirection, int dayIndex, bool isDay)
+        public void SetWindDirection(string windDirection, int dayIndex, TimeOfDay timeOfDay)
         {
+            if (dayIndex > 6)
+            {
+                return;
+            }
             DayWeather day = week[dayIndex];
-            if (isDay)
+
+            if (timeOfDay == TimeOfDay.Day)
             {
                 day.dayWeather.wind.direction = ParseStringToWindDirection(windDirection);
             }
@@ -63,10 +80,15 @@
             week[dayIndex] = day;
         }
 
-        public void SetWindSpeed(string windSpeed, int dayIndex, bool isDay)
+        public void SetWindSpeed(string windSpeed, int dayIndex, TimeOfDay timeOfDay)
         {
+            if (dayIndex > 6)
+            {
+                return;
+            }
             DayWeather day = week[dayIndex];
-            if (isDay)
+
+            if (timeOfDay == TimeOfDay.Day)
             {
                 day.dayWeather.wind.speed = windSpeed;
             }

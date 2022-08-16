@@ -55,7 +55,7 @@ namespace WeatherCollector.WeatherDataSource
 
                     if (isDay)
                     {
-                        currentWeekWeather.SetTemperature(temperature, dayCount, isDay);
+                        currentWeekWeather.SetTemperature(temperature, dayCount, WeekWeather.TimeOfDay.Day);
                         dayCount++;
                         isDay = false;
                     }
@@ -65,7 +65,7 @@ namespace WeatherCollector.WeatherDataSource
                         {
                             break;
                         }
-                        currentWeekWeather.SetTemperature(temperature, dayCount, isDay);
+                        currentWeekWeather.SetTemperature(temperature, dayCount, WeekWeather.TimeOfDay.Night);
                         isDay = true;
                     }
                 }
@@ -112,11 +112,11 @@ namespace WeatherCollector.WeatherDataSource
                         {
                             if (findDayPrecipitation == FindState.Finding)
                             {
-                                currentWeekWeather.SetPrecipitation(precipitation, dayCount, true);
+                                currentWeekWeather.SetPrecipitation(precipitation, dayCount, WeekWeather.TimeOfDay.Day);
                             }
                             else if (findNightPrecipitation == FindState.Finding)
                             {
-                                currentWeekWeather.SetPrecipitation(precipitation, dayCount, false);
+                                currentWeekWeather.SetPrecipitation(precipitation, dayCount, WeekWeather.TimeOfDay.Night);
                             }
                             if (dayCount == WeatherProvider.numberForecastDaysMax)
                             {
@@ -176,11 +176,11 @@ namespace WeatherCollector.WeatherDataSource
 
                         if (findDayWind == FindState.Finding)
                         {
-                            currentWeekWeather.SetWindDirection(stringWind, dayCount, true);
+                            currentWeekWeather.SetWindDirection(stringWind, dayCount, WeekWeather.TimeOfDay.Day);
                         }
                         else if (findNightWind == FindState.Finding)
                         {
-                            currentWeekWeather.SetWindDirection(stringWind, dayCount, false);
+                            currentWeekWeather.SetWindDirection(stringWind, dayCount, WeekWeather.TimeOfDay.Night);
                         }
                         if (dayCount == WeatherProvider.numberForecastDaysMax)
                         {
@@ -239,11 +239,11 @@ namespace WeatherCollector.WeatherDataSource
 
                         if (findDayWind == FindState.Finding)
                         {
-                            currentWeekWeather.SetWindSpeed(stringWind, dayCount, true);
+                            currentWeekWeather.SetWindSpeed(stringWind, dayCount, WeekWeather.TimeOfDay.Day);
                         }
                         else if (findNightWind == FindState.Finding)
                         {
-                            currentWeekWeather.SetWindSpeed(stringWind, dayCount, false);
+                            currentWeekWeather.SetWindSpeed(stringWind, dayCount, WeekWeather.TimeOfDay.Night);
                         }
                         if (dayCount == WeatherProvider.numberForecastDaysMax)
                         {

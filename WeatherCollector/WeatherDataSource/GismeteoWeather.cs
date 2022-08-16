@@ -34,10 +34,10 @@ namespace WeatherCollector.WeatherDataSource
                 switch (count % 2)
                 {
                     case 0:
-                        currentWeekWeather.SetTemperature(temperatureParametrs[count], dayIndex, true);
+                        currentWeekWeather.SetTemperature(temperatureParametrs[count], dayIndex, WeekWeather.TimeOfDay.Day);
                         break;
                     case 1:
-                        currentWeekWeather.SetTemperature(temperatureParametrs[count], dayIndex, false);
+                        currentWeekWeather.SetTemperature(temperatureParametrs[count], dayIndex, WeekWeather.TimeOfDay.Night);
                         break;
                 }
             }
@@ -52,7 +52,7 @@ namespace WeatherCollector.WeatherDataSource
             var precipitationParametrs = WeatherProvider.FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
             for (int count = 0; count < precipitationParametrs.Count; count++)
             {
-                currentWeekWeather.SetPrecipitation(precipitationParametrs[count], count, false);
+                currentWeekWeather.SetPrecipitation(precipitationParametrs[count], count, WeekWeather.TimeOfDay.Night);
             }
         }
 
@@ -65,7 +65,7 @@ namespace WeatherCollector.WeatherDataSource
             var precipitationParametrs = WeatherProvider.FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
             for (int count = 0; count < precipitationParametrs.Count; count++)
             {
-                currentWeekWeather.SetWindDirection(precipitationParametrs[count], count, false);
+                currentWeekWeather.SetWindDirection(precipitationParametrs[count], count, WeekWeather.TimeOfDay.Night);
             }
         }
 
@@ -79,7 +79,7 @@ namespace WeatherCollector.WeatherDataSource
             for (int count = 0; count < precipitationParametrs.Count; count++)
             {
                 var speed = precipitationParametrs[count].Replace(" ", "");
-                currentWeekWeather.SetWindSpeed(speed, count, false);
+                currentWeekWeather.SetWindSpeed(speed, count, WeekWeather.TimeOfDay.Night);
             }
         }
     }
