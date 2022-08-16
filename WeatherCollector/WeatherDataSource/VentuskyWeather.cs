@@ -215,16 +215,21 @@ namespace WeatherCollector.WeatherDataSource
 
         public void FindWindSpeed(string source, WeekWeather currentWeekWeather)
         {
-            //var commonKeyForParametr = "widget-row-wind-speed\"";
-            //var beginKeys = new List<string>() { "unit_wind_m_s\">\n", "unit_wind_m_s warning\">\n" };
-            //var endKey = '\n';
-            //var dataAmount = WeatherProvider.numberForecastDaysMax + 1;
-            //var precipitationParametrs = WeatherProvider.FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
-            //for (int count = 0; count < precipitationParametrs.Count; count++)
-            //{
-            //    var speed = precipitationParametrs[count].Replace(" ", "");
-            //    currentWeekWeather.SetWindSpeed(speed, count, false);
-            //}
+            var commonKeyForParametr = "d_1\":";
+            var beginKeys = new List<string>() { "\"vsd\":\"" };
+            var endKey = ' ';
+
+            var speedParametrs = WeatherProvider.FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
+            for (var dayCount = 0; dayCount < dayInWeek; dayCount++)
+            {
+                var speeedSum = 0;
+                for (var timestampCount = 0; timestampCount < timestampNumber; timestampCount++)
+                {
+                    var stringSpeed = speedParametrs[dayCount * timestampNumber + timestampCount];
+                    speeedSum += int.Parse(stringSpeed);
+                }
+                currentWeekWeather.SetWindSpeed((speeedSum / timestampNumber).ToString(), dayCount + 1, WeekWeather.TimeOfDay.Night);
+            }
         }
     }
 }

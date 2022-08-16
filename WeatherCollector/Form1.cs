@@ -68,7 +68,8 @@ namespace WeatherCollector
             gidroMCWeather = new GidroMCWeather();
             ventuskyWeather = new VentuskyWeather();
 
-            progressBar.Maximum = progressBarStartOffset + (gismeteoWeather.StationList.Count + gidroMCWeather.StationList.Count) * progressBarStep;
+            var allStationCount = gismeteoWeather.StationList.Count + gidroMCWeather.StationList.Count + ventuskyWeather.StationList.Count;
+            progressBar.Maximum = progressBarStartOffset + (allStationCount) * progressBarStep;
         }
 
         private void SetupComboBox()
@@ -111,13 +112,13 @@ namespace WeatherCollector
 
         void GetDataFromStations()
         {
-            //weatherProvider = new WeatherProvider(gismeteoWeather, this);
-            //weatherProvider.GetDataFromStations();
-            //gismeteoWeatherDict = weatherProvider.weatherDict;
+            weatherProvider = new WeatherProvider(gismeteoWeather, this);
+            weatherProvider.GetDataFromStations();
+            gismeteoWeatherDict = weatherProvider.weatherDict;
 
-            //weatherProvider = new WeatherProvider(gidroMCWeather, this);
-            //weatherProvider.GetDataFromStations();
-            //gidroMCoWeatherDict = weatherProvider.weatherDict;
+            weatherProvider = new WeatherProvider(gidroMCWeather, this);
+            weatherProvider.GetDataFromStations();
+            gidroMCoWeatherDict = weatherProvider.weatherDict;
 
             weatherProvider = new WeatherProvider(ventuskyWeather, this);
             weatherProvider.GetDataFromStations();
@@ -160,7 +161,8 @@ namespace WeatherCollector
             CreateExcelDoc excelApp = new CreateExcelDoc();
             var currentCol = 2;
             currentCol = CreateTabel(excelApp, currentCol, gidroMCoWeatherDict, gidroMCWeather);
-            CreateTabel(excelApp, currentCol + 1, gismeteoWeatherDict, gismeteoWeather);
+            currentCol = CreateTabel(excelApp, currentCol + 1, gismeteoWeatherDict, gismeteoWeather);
+            CreateTabel(excelApp, currentCol + 1, ventuskyWeatherDict, ventuskyWeather);
         }
 
         private int CreateTabel(CreateExcelDoc excelApp, int startedRow, Dictionary<string, WeekWeather> weatherDict, IWeatherDataSource dataSource)
