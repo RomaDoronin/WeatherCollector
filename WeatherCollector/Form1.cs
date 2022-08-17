@@ -160,14 +160,15 @@ namespace WeatherCollector
         {
             CreateExcelDoc excelApp = new CreateExcelDoc();
             var currentCol = 2;
-            currentCol = CreateTabel(excelApp, currentCol, gidroMCoWeatherDict, gidroMCWeather);
-            currentCol = CreateTabel(excelApp, currentCol + 1, gismeteoWeatherDict, gismeteoWeather);
-            CreateTabel(excelApp, currentCol + 1, ventuskyWeatherDict, ventuskyWeather);
+            var stepBetweenTabels = 2;
+            currentCol = CreateTabel(excelApp, currentCol, gidroMCoWeatherDict, gidroMCWeather, "Гидрометцентр");
+            currentCol = CreateTabel(excelApp, currentCol + stepBetweenTabels, gismeteoWeatherDict, gismeteoWeather, "Gismeteo");
+            CreateTabel(excelApp, currentCol + stepBetweenTabels, ventuskyWeatherDict, ventuskyWeather, "Ventusky");
         }
 
-        private int CreateTabel(CreateExcelDoc excelApp, int startedRow, Dictionary<string, WeekWeather> weatherDict, IWeatherDataSource dataSource)
+        private int CreateTabel(CreateExcelDoc excelApp, int startedRow, Dictionary<string, WeekWeather> weatherDict, IWeatherDataSource dataSource, string sourceName)
         {
-            FillTableHeader(excelApp, startedRow);
+            FillTableHeader(excelApp, startedRow, sourceName);
 
             var stationNumber = dataSource.StationList.Count;
             for (var stationCount = 0; stationCount < stationNumber; stationCount++)
@@ -184,10 +185,14 @@ namespace WeatherCollector
             return startedRow + 2 + stationNumber * 3;
         }
 
-        private static void FillTableHeader(CreateExcelDoc excelApp, int startedRow)
+        private static void FillTableHeader(CreateExcelDoc excelApp, int startedRow, string sourceName)
         {
+            var sourceRow = startedRow - 1;
+            excelApp.AddData(2, sourceRow, sourceName, HorizontalAlignment.Center);
+
             var territoryRow = startedRow;
             excelApp.AddData(2, territoryRow, "Территория области", HorizontalAlignment.Center);
+
             var parametersRow = startedRow;
             excelApp.AddData(3, parametersRow, "Параметры", HorizontalAlignment.Center);
             excelApp.EntireRowDoBold(startedRow, 3);
@@ -296,6 +301,10 @@ namespace WeatherCollector
                     }
                 }
             }
+
+            // Название источника
+            var sourceNameRow = startedRow - 1;
+            excelApp.Merge("B" + sourceNameRow.ToString(), "O" + sourceNameRow.ToString());
         }
 
         private void BoldNeededCell(CreateExcelDoc excelApp, int startedRow, int stationNumber)

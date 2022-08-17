@@ -110,7 +110,6 @@ namespace WeatherCollector.WeatherDataSource
             return Math.Sqrt(vector.Item1 * vector.Item1 + vector.Item2 * vector.Item2);
         }
 
-
         private string CompareVectorLenght((double, double) originVector, string firstDirection, string secondDirection)
         {
             var firstVector = DirectionDict[firstDirection];
