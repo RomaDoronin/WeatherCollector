@@ -19,6 +19,8 @@ namespace WeatherCollector.WeatherDataSource
 
         public List<string> StationList => new List<string>()
         {
+            "shakhunya",
+            "nizhny-novgorod",
             "vyksa"
         };
         public bool IsDivideDayNight => false;
@@ -76,120 +78,17 @@ namespace WeatherCollector.WeatherDataSource
             }
         }
 
-        private static double sin45 = Math.Sqrt(2) / 2;
-
-        private readonly Dictionary<string, (double, double)> DirectionDict = new()
+        private readonly Dictionary<string, string> DirectionDict = new()
         {
-            { "\\u0421", (0, 1) },
-            { "С", (0, 1) },
-
-            { "\\u0421\\u0412", (sin45, sin45) },
-            { "СЗ", (sin45, sin45) },
-
-            { "\\u0412", (1, 0) },
-            { "З", (1, 0) },
-
-            { "\\u042e\\u0412", (sin45, -sin45) },
-            { "ЮЗ", (sin45, -sin45) },
-
-            { "\\u042e", (0, -1) },
-            { "Ю", (0, -1) },
-
-            { "\\u042e\\u0417", (-sin45, -sin45) },
-            { "ЮВ", (-sin45, -sin45) },
-
-            { "\\u0417", (-1, 0) },
-            { "В", (-1, 0) },
-
-            { "\\u0421\\u0417", (-sin45, sin45) },
-            { "СВ", (-sin45, sin45) }
+            { "\\u0421", "С" },
+            { "\\u0421\\u0412", "СЗ" },
+            { "\\u0412", "З" },
+            { "\\u042e\\u0412", "ЮЗ" },
+            { "\\u042e", "Ю" },
+            { "\\u042e\\u0417", "ЮВ" },
+            { "\\u0417", "В" },
+            { "\\u0421\\u0417", "СВ" }
         };
-
-        private double CulcVectorLenght((double, double) vector)
-        {
-            return Math.Sqrt(vector.Item1 * vector.Item1 + vector.Item2 * vector.Item2);
-        }
-
-        private string CompareVectorLenght((double, double) originVector, string firstDirection, string secondDirection)
-        {
-            var firstVector = DirectionDict[firstDirection];
-            var firstSumVector = (originVector.Item1 + firstVector.Item1, originVector.Item2 + firstVector.Item2);
-            var firstSumLenght = CulcVectorLenght(firstSumVector);
-
-            var secondVector = DirectionDict[secondDirection];
-            var secondSumVector = (originVector.Item1 + secondVector.Item1, originVector.Item2 + secondVector.Item2);
-            var secondSumLenght = CulcVectorLenght(secondSumVector);
-
-            if (firstSumLenght > secondSumLenght)
-            {
-                return firstDirection;
-            }
-            else
-            {
-                return secondDirection;
-            }
-        }
-
-        private string GetDirectionByVector((double, double) vector)
-        {
-            // Определенить четверть
-            if (vector.Item1 >= 0 && vector.Item2 > 0)
-            {
-                // I четверть
-                if (vector.Item1 > vector.Item2)
-                {
-                    // Верхняя половина
-                    return CompareVectorLenght(vector, "С", "СВ");
-                }
-                else
-                {
-                    // Нижняя половина
-                    return CompareVectorLenght(vector, "СВ", "В");
-                }
-            }
-            else if (vector.Item1 > 0 && vector.Item2 <= 0)
-            {
-                // II четверть
-                if (vector.Item1 < Math.Abs(vector.Item2))
-                {
-                    // Верхняя половина
-                    return CompareVectorLenght(vector, "В", "ЮВ");
-                }
-                else
-                {
-                    // Нижняя половина
-                    return CompareVectorLenght(vector, "ЮВ", "Ю");
-                }
-            }
-            else if (vector.Item1 <= 0 && vector.Item2 < 0)
-            {
-                // III четверть
-                if (vector.Item1 < vector.Item2)
-                {
-                    // Нижняя половина
-                    return CompareVectorLenght(vector, "Ю", "ЮЗ");
-                }
-                else
-                {
-                    // Верхняя половина
-                    return CompareVectorLenght(vector, "ЮЗ", "З");
-                }
-            }
-            else
-            {
-                // IV четверть
-                if (Math.Abs(vector.Item1) < vector.Item2)
-                {
-                    // Нижняя половина
-                    return CompareVectorLenght(vector, "З", "СЗ");
-                }
-                else
-                {
-                    // Верхняя половина
-                    return CompareVectorLenght(vector, "СЗ", "С");
-                }
-            }
-        }
 
         public void FindWindDirection(string source, WeekWeather currentWeekWeather)
         {
@@ -200,15 +99,9 @@ namespace WeatherCollector.WeatherDataSource
             var directionParametrs = WeatherProvider.FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
             for (var dayCount = 0; dayCount < dayInWeek; dayCount++)
             {
-                (double, double) directionSum = (0, 0);
-                for (var timestampCount = 0; timestampCount < timestampNumber; timestampCount++)
-                {
-                    var direction = directionParametrs[dayCount * timestampNumber + timestampCount];
-                    directionSum.Item1 += DirectionDict[direction].Item1;
-                    directionSum.Item2 += DirectionDict[direction].Item2;
-                }
-                (double, double) directionVector = (directionSum.Item1 / timestampNumber, directionSum.Item2 / timestampNumber);
-                currentWeekWeather.SetWindDirection(GetDirectionByVector(directionVector), dayCount + 1, WeekWeather.TimeOfDay.Night);
+                var fifteenHoursTimestam = 5;
+                var direction = directionParametrs[dayCount * timestampNumber + fifteenHoursTimestam];
+                currentWeekWeather.SetWindDirection(DirectionDict[direction], dayCount + 1, WeekWeather.TimeOfDay.Night);
             }
         }
 
@@ -221,13 +114,24 @@ namespace WeatherCollector.WeatherDataSource
             var speedParametrs = WeatherProvider.FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
             for (var dayCount = 0; dayCount < dayInWeek; dayCount++)
             {
-                var speeedSum = 0;
+                int speeedSum = 0;
                 for (var timestampCount = 0; timestampCount < timestampNumber; timestampCount++)
                 {
                     var stringSpeed = speedParametrs[dayCount * timestampNumber + timestampCount];
                     speeedSum += int.Parse(stringSpeed);
                 }
-                currentWeekWeather.SetWindSpeed((speeedSum / timestampNumber).ToString(), dayCount + 1, WeekWeather.TimeOfDay.Night);
+                var integer = speeedSum / timestampNumber;
+                var remainder = speeedSum % timestampNumber;
+                var speed = 0;
+                if (remainder * 2 > integer)
+                {
+                    speed = integer + 1;
+                }
+                else
+                {
+                    speed = integer;
+                }
+                currentWeekWeather.SetWindSpeed(speed.ToString(), dayCount + 1, WeekWeather.TimeOfDay.Night);
             }
         }
     }

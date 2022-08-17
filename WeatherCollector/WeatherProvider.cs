@@ -26,7 +26,7 @@ namespace WeatherCollector
 
     public class WeatherProvider
     {
-        public readonly Dictionary<String, WeekWeather> weatherDict;
+        public Dictionary<String, WeekWeather> weatherDict;
 
         private readonly IWeatherDataSource dataSource;
         private readonly IProgressBarInteraction progressBarInteraction;

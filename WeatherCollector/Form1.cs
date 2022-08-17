@@ -34,7 +34,15 @@ namespace WeatherCollector
 
             { "shakhunya-4322", "Шахунья" },
             { "nizhny-novgorod-4355", "Нижний Новгород" },
-            { "vyksa-4375", "Выкса" }
+            { "vyksa-4375", "Выкса" },
+
+            { "shakhunya", "Шахунья" },
+            { "nizhny-novgorod", "Нижний Новгород" },
+            //{ "vyksa", "Выкса" }
+
+            { "Shakhun'ya", "Шахунья" },
+            { "Nizhny%20Novgorod", "Нижний Новгород" },
+            { "Vyksa", "Выкса" }
         };
 
         private readonly Dictionary<int, string> monthNumberDict = new()
@@ -56,6 +64,7 @@ namespace WeatherCollector
         private GismeteoWeather gismeteoWeather;
         private GidroMCWeather gidroMCWeather;
         private VentuskyWeather ventuskyWeather;
+        private YrWeather yrWeather;
 
         private WeatherProvider weatherProvider;
 
@@ -67,8 +76,9 @@ namespace WeatherCollector
             gismeteoWeather = new GismeteoWeather();
             gidroMCWeather = new GidroMCWeather();
             ventuskyWeather = new VentuskyWeather();
+            yrWeather = new YrWeather();
 
-            var allStationCount = gismeteoWeather.StationList.Count + gidroMCWeather.StationList.Count + ventuskyWeather.StationList.Count;
+            var allStationCount = gismeteoWeather.StationList.Count + gidroMCWeather.StationList.Count + ventuskyWeather.StationList.Count + yrWeather.StationList.Count * 9;
             progressBar.Maximum = progressBarStartOffset + (allStationCount) * progressBarStep;
         }
 
@@ -109,6 +119,7 @@ namespace WeatherCollector
         private Dictionary<string, WeekWeather> gidroMCoWeatherDict;
         private Dictionary<string, WeekWeather> gismeteoWeatherDict;
         private Dictionary<string, WeekWeather> ventuskyWeatherDict;
+        private Dictionary<string, WeekWeather> yrWeatherDict;
 
         void GetDataFromStations()
         {
@@ -123,6 +134,13 @@ namespace WeatherCollector
             weatherProvider = new WeatherProvider(ventuskyWeather, this);
             weatherProvider.GetDataFromStations();
             ventuskyWeatherDict = weatherProvider.weatherDict;
+
+            weatherProvider = new WeatherProvider(yrWeather, this);
+            weatherProvider.GetDataFromStations();
+            yrWeatherDict = weatherProvider.weatherDict;
+
+            var yrWeatherWindDirection = new YrWeatherWindDirection(yrWeather, yrWeatherDict, this);
+            yrWeatherWindDirection.GetDataFromStations();
         }
 
         public void IncrementProgressCount()
@@ -163,7 +181,8 @@ namespace WeatherCollector
             var stepBetweenTabels = 2;
             currentCol = CreateTabel(excelApp, currentCol, gidroMCoWeatherDict, gidroMCWeather, "Гидрометцентр");
             currentCol = CreateTabel(excelApp, currentCol + stepBetweenTabels, gismeteoWeatherDict, gismeteoWeather, "Gismeteo");
-            CreateTabel(excelApp, currentCol + stepBetweenTabels, ventuskyWeatherDict, ventuskyWeather, "Ventusky");
+            currentCol = CreateTabel(excelApp, currentCol + stepBetweenTabels, ventuskyWeatherDict, ventuskyWeather, "Ventusky");
+            _ = CreateTabel(excelApp, currentCol + stepBetweenTabels, yrWeatherDict, yrWeather, "Yr");
         }
 
         private int CreateTabel(CreateExcelDoc excelApp, int startedRow, Dictionary<string, WeekWeather> weatherDict, IWeatherDataSource dataSource, string sourceName)

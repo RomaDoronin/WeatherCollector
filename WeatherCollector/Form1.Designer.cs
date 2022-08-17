@@ -96,7 +96,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(520, 20);
             this.label2.TabIndex = 5;
-            this.label2.Text = "1. Нажмите кнопку \"Скачать\" для скачивания данных о погоде с сервера.";
+            this.label2.Text = "1. Нажмите кнопку \"Скачать\" для скачивания данных о погоде из источников.";
             // 
             // label3
             // 
