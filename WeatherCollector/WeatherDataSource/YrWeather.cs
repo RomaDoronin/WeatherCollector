@@ -91,7 +91,7 @@ namespace WeatherCollector.WeatherDataSource
             foreach (var station in yrWeather.StationList)
             {
                 currentWeekWeather = weatherDict[station];
-                for (var dayCount = 0; dayCount < dayAmount; dayCount++)
+                for (var dayCount = 1; dayCount < dayAmount; dayCount++)
                 {
                     dayNumber = dayCount;
                     SendRequestForWeather(station, dayCount.ToString());

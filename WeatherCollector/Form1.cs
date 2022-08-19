@@ -78,7 +78,7 @@ namespace WeatherCollector
             ventuskyWeather = new VentuskyWeather();
             yrWeather = new YrWeather();
 
-            var allStationCount = gismeteoWeather.StationList.Count + gidroMCWeather.StationList.Count + ventuskyWeather.StationList.Count + yrWeather.StationList.Count * 9;
+            var allStationCount = gismeteoWeather.StationList.Count + gidroMCWeather.StationList.Count + ventuskyWeather.StationList.Count + yrWeather.StationList.Count * 8;
             progressBar.Maximum = progressBarStartOffset + (allStationCount) * progressBarStep;
         }
 
