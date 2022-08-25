@@ -73,6 +73,9 @@ namespace WeatherCollector
             InitializeComponent();
             SetupComboBox();
 
+            Logs.ClearAll();
+            Logs.WriteMetaData();
+
             gismeteoWeather = new GismeteoWeather();
             gidroMCWeather = new GidroMCWeather();
             ventuskyWeather = new VentuskyWeather();
@@ -109,6 +112,8 @@ namespace WeatherCollector
 
         private void downloadWeatherButton_Click(object sender, EventArgs e)
         {
+            Logs.WriteLine("downloadWeatherButton_Click");
+
             downloadWeatherButton.Enabled = false;
             progressCount += progressBarStartOffset;
             progressBar.BeginInvoke(new MyIntDelegate(DelegateMethod), progressCount);
@@ -123,22 +128,27 @@ namespace WeatherCollector
 
         void GetDataFromStations()
         {
+            Logs.WriteLine("gismeteoWeather start");
             weatherProvider = new WeatherProvider(gismeteoWeather, this);
             weatherProvider.GetDataFromStations();
             gismeteoWeatherDict = weatherProvider.weatherDict;
 
+            Logs.WriteLine("gidroMCWeather start");
             weatherProvider = new WeatherProvider(gidroMCWeather, this);
             weatherProvider.GetDataFromStations();
             gidroMCoWeatherDict = weatherProvider.weatherDict;
 
+            Logs.WriteLine("ventuskyWeather start");
             weatherProvider = new WeatherProvider(ventuskyWeather, this);
             weatherProvider.GetDataFromStations();
             ventuskyWeatherDict = weatherProvider.weatherDict;
 
+            Logs.WriteLine("yrWeather start");
             weatherProvider = new WeatherProvider(yrWeather, this);
             weatherProvider.GetDataFromStations();
             yrWeatherDict = weatherProvider.weatherDict;
 
+            Logs.WriteLine("yrWeatherDict start");
             var yrWeatherWindDirection = new YrWeatherWindDirection(yrWeather, yrWeatherDict, this);
             yrWeatherWindDirection.GetDataFromStations();
         }
@@ -147,6 +157,9 @@ namespace WeatherCollector
         {
             progressCount += progressBarStep;
             progressBar.BeginInvoke(new MyIntDelegate(DelegateMethod), progressCount);
+
+            Logs.WriteLine(progressCount.ToString() + " / " + progressBar.Maximum.ToString());
+
             if (progressCount == progressBar.Maximum)
             {
                 createDocButton.BeginInvoke(new MyBoolDelegate(DelegateMethodcreateDocButton), true);
@@ -160,6 +173,8 @@ namespace WeatherCollector
 
         private void createDocButton_Click(object sender, EventArgs e)
         {
+            Logs.WriteLine("createDocButton_Click");
+
             UpdateNumberForecastDays();
             CreateDoc();
         }

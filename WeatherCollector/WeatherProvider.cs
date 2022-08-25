@@ -49,6 +49,8 @@ namespace WeatherCollector
 
         private void SendRequestForWeather(string station)
         {
+            Logs.WriteLine("SendRequestForWeather - station: " + station);
+
             String url = dataSource.GetUrl(station);
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
@@ -59,7 +61,7 @@ namespace WeatherCollector
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                Console.WriteLine("Всё норм.");
+                Logs.WriteLine("Всё норм");
 
                 // Get the stream associated with the response.
                 Stream receiveStream = response.GetResponseStream();
@@ -73,21 +75,27 @@ namespace WeatherCollector
             }
             else if (response.StatusCode == HttpStatusCode.NotFound)
             {
-                Console.WriteLine("Такой страницы нет.");
+                Logs.WriteLine("Такой страницы нет");
             }
             response.Close();
         }
 
         private void ParseHtmlString(string source, string station)
         {
+            Logs.WriteLine("ParseHtmlString - station: " + station);
             var currentWeekWeather = new WeekWeather();
 
+            Logs.WriteLine("ParseHtmlString - FindTemperature");
             dataSource.FindTemperature(source, currentWeekWeather);
+            Logs.WriteLine("ParseHtmlString - FindPrecipitation");
             dataSource.FindPrecipitation(source, currentWeekWeather);
+            Logs.WriteLine("ParseHtmlString - FindWindDirection");
             dataSource.FindWindDirection(source, currentWeekWeather);
+            Logs.WriteLine("ParseHtmlString - FindWindSpeed");
             dataSource.FindWindSpeed(source, currentWeekWeather);
 
             weatherDict[station] = currentWeekWeather;
+            Logs.WriteLine("ParseHtmlString - END");
         }
 
         // Static
