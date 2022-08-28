@@ -52,6 +52,7 @@ namespace WeatherCollector
             Logs.WriteLine("SendRequestForWeather - station: " + station);
 
             String url = dataSource.GetUrl(station);
+            Logs.WriteLine("SendRequestForWeather - url: " + url);
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();

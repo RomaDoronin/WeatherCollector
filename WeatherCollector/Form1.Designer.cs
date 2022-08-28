@@ -153,7 +153,7 @@
             this.Controls.Add(this.downloadWeatherButton);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
-            this.Text = "Собиратель Погоды 2.0.2";
+            this.Text = "Собиратель Погоды 2.0.3";
             this.ResumeLayout(false);
             this.PerformLayout();
 
