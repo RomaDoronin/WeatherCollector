@@ -77,37 +77,6 @@ namespace WeatherCollector.WeatherDataSource
             }
         }
 
-        private string DoubleStringRound(double value)
-        {
-            var roundValue = Math.Round(value, 1);
-            var stringValue = roundValue.ToString();
-            var splitStringValueValue = stringValue.Split(',');
-            if (splitStringValueValue.Length < 2)
-            {
-                return stringValue;
-            }
-            var beforeComma = splitStringValueValue[0];
-            var afterComma = splitStringValueValue[1];
-            if (afterComma.Length > 1)
-            {
-                var first = int.Parse(afterComma);
-                while (first > 100)
-                {
-                    first /= 10;
-                }
-                var remains = first % 10;
-                if (remains < 5)
-                {
-                    return beforeComma + "," + first;
-                }
-                else
-                {
-                    return beforeComma + "," + first + 1;
-                }
-            }
-            return stringValue;
-        }
-
         private readonly Dictionary<string, string> DirectionDict = new()
         {
             { "\\u0421", "С" },
