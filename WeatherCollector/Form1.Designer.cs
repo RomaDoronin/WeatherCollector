@@ -170,7 +170,6 @@
             // ventuskyCheckBox
             // 
             this.ventuskyCheckBox.AutoSize = true;
-            this.ventuskyCheckBox.Enabled = false;
             this.ventuskyCheckBox.Location = new System.Drawing.Point(13, 86);
             this.ventuskyCheckBox.Name = "ventuskyCheckBox";
             this.ventuskyCheckBox.Size = new System.Drawing.Size(88, 24);
