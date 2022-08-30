@@ -75,14 +75,6 @@ namespace WeatherCollector
 
             Logs.ClearAll();
             Logs.WriteMetaData();
-
-            gismeteoWeather = new GismeteoWeather();
-            gidroMCWeather = new GidroMCWeather();
-            ventuskyWeather = new VentuskyWeather();
-            yrWeather = new YrWeather();
-
-            var allStationCount = gismeteoWeather.StationList.Count + gidroMCWeather.StationList.Count + ventuskyWeather.StationList.Count + yrWeather.StationList.Count * 8;
-            progressBar.Maximum = progressBarStartOffset + (allStationCount) * progressBarStep;
         }
 
         private void SetupComboBox()
@@ -114,11 +106,45 @@ namespace WeatherCollector
         {
             Logs.WriteLine("downloadWeatherButton_Click");
 
+            dataSourceGroupBox.Enabled = false;
+            InitWeatherProviders();
+            SetprogressBarMaximumValue();
             downloadWeatherButton.Enabled = false;
+
             progressCount += progressBarStartOffset;
             progressBar.BeginInvoke(new MyIntDelegate(DelegateMethod), progressCount);
 
             _ = GetDataFromStationsAsync();
+        }
+
+        private void InitWeatherProviders()
+        {
+            if (gismeteoCheckBox.Checked)
+            {
+                gismeteoWeather = new GismeteoWeather();
+            }
+            if (gidroMCCheckBox.Checked)
+            {
+                gidroMCWeather = new GidroMCWeather();
+            }
+            if (ventuskyCheckBox.Checked)
+            {
+                ventuskyWeather = new VentuskyWeather();
+            }
+            if (yrCheckBox.Checked)
+            {
+                yrWeather = new YrWeather();
+            }
+        }
+
+        private void SetprogressBarMaximumValue()
+        { 
+            var allStationCount =
+                (gismeteoCheckBox.Checked ? gismeteoWeather.StationList.Count : 0)
+                + (gidroMCCheckBox.Checked ? gidroMCWeather.StationList.Count : 0)
+                + (ventuskyCheckBox.Checked ? ventuskyWeather.StationList.Count : 0)
+                + (yrCheckBox.Checked ? (yrWeather.StationList.Count * 8) : 0);
+            progressBar.Maximum = progressBarStartOffset + (allStationCount) * progressBarStep;
         }
 
         private Dictionary<string, WeekWeather> gidroMCoWeatherDict;
@@ -128,29 +154,38 @@ namespace WeatherCollector
 
         void GetDataFromStations()
         {
-            Logs.WriteLine("gismeteoWeather start");
-            weatherProvider = new WeatherProvider(gismeteoWeather, this);
-            weatherProvider.GetDataFromStations();
-            gismeteoWeatherDict = weatherProvider.weatherDict;
+            if (gismeteoCheckBox.Checked)
+            {
+                Logs.WriteLine("gismeteoWeather start");
+                weatherProvider = new WeatherProvider(gismeteoWeather, this);
+                weatherProvider.GetDataFromStations();
+                gismeteoWeatherDict = weatherProvider.weatherDict;
+            }
+            if (gidroMCCheckBox.Checked)
+            {
+                Logs.WriteLine("gidroMCWeather start");
+                weatherProvider = new WeatherProvider(gidroMCWeather, this);
+                weatherProvider.GetDataFromStations();
+                gidroMCoWeatherDict = weatherProvider.weatherDict;
+            }
+            if (ventuskyCheckBox.Checked)
+            {
+                Logs.WriteLine("ventuskyWeather start");
+                weatherProvider = new WeatherProvider(ventuskyWeather, this);
+                weatherProvider.GetDataFromStations();
+                ventuskyWeatherDict = weatherProvider.weatherDict;
+            }
+            if (yrCheckBox.Checked)
+            {
+                Logs.WriteLine("yrWeather start");
+                weatherProvider = new WeatherProvider(yrWeather, this);
+                weatherProvider.GetDataFromStations();
+                yrWeatherDict = weatherProvider.weatherDict;
 
-            Logs.WriteLine("gidroMCWeather start");
-            weatherProvider = new WeatherProvider(gidroMCWeather, this);
-            weatherProvider.GetDataFromStations();
-            gidroMCoWeatherDict = weatherProvider.weatherDict;
-
-            Logs.WriteLine("ventuskyWeather start");
-            weatherProvider = new WeatherProvider(ventuskyWeather, this);
-            weatherProvider.GetDataFromStations();
-            ventuskyWeatherDict = weatherProvider.weatherDict;
-
-            Logs.WriteLine("yrWeather start");
-            weatherProvider = new WeatherProvider(yrWeather, this);
-            weatherProvider.GetDataFromStations();
-            yrWeatherDict = weatherProvider.weatherDict;
-
-            Logs.WriteLine("yrWeatherDict start");
-            var yrWeatherWindDirection = new YrWeatherWindDirection(yrWeather, yrWeatherDict, this);
-            yrWeatherWindDirection.GetDataFromStations();
+                Logs.WriteLine("yrWeatherDict start");
+                var yrWeatherWindDirection = new YrWeatherWindDirection(yrWeather, yrWeatherDict, this);
+                yrWeatherWindDirection.GetDataFromStations();
+            }
         }
 
         public void IncrementProgressCount()
@@ -194,10 +229,22 @@ namespace WeatherCollector
             CreateExcelDoc excelApp = new CreateExcelDoc();
             var currentCol = 2;
             var stepBetweenTabels = 2;
-            currentCol = CreateTabel(excelApp, currentCol, gidroMCoWeatherDict, gidroMCWeather, "Гидрометцентр");
-            currentCol = CreateTabel(excelApp, currentCol + stepBetweenTabels, gismeteoWeatherDict, gismeteoWeather, "Gismeteo");
-            currentCol = CreateTabel(excelApp, currentCol + stepBetweenTabels, ventuskyWeatherDict, ventuskyWeather, "Ventusky");
-            _ = CreateTabel(excelApp, currentCol + stepBetweenTabels, yrWeatherDict, yrWeather, "Yr");
+            if (gidroMCCheckBox.Checked)
+            {
+                currentCol = CreateTabel(excelApp, currentCol, gidroMCoWeatherDict, gidroMCWeather, "Гидрометцентр");
+            }
+            if (gismeteoCheckBox.Checked)
+            {
+                currentCol = CreateTabel(excelApp, currentCol + stepBetweenTabels, gismeteoWeatherDict, gismeteoWeather, "Gismeteo");
+            }
+            if (ventuskyCheckBox.Checked)
+            {
+                currentCol = CreateTabel(excelApp, currentCol + stepBetweenTabels, ventuskyWeatherDict, ventuskyWeather, "Ventusky");
+            }
+            if (yrCheckBox.Checked)
+            {
+                _ = CreateTabel(excelApp, currentCol + stepBetweenTabels, yrWeatherDict, yrWeather, "Yr");
+            }
         }
 
         private int CreateTabel(CreateExcelDoc excelApp, int startedRow, Dictionary<string, WeekWeather> weatherDict, IWeatherDataSource dataSource, string sourceName)

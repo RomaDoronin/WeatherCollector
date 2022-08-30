@@ -39,11 +39,17 @@
             this.label4 = new System.Windows.Forms.Label();
             this.numberForecastDaysComboBox = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
+            this.dataSourceGroupBox = new System.Windows.Forms.GroupBox();
+            this.yrCheckBox = new System.Windows.Forms.CheckBox();
+            this.ventuskyCheckBox = new System.Windows.Forms.CheckBox();
+            this.gismeteoCheckBox = new System.Windows.Forms.CheckBox();
+            this.gidroMCCheckBox = new System.Windows.Forms.CheckBox();
+            this.dataSourceGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // downloadWeatherButton
             // 
-            this.downloadWeatherButton.Location = new System.Drawing.Point(199, 182);
+            this.downloadWeatherButton.Location = new System.Drawing.Point(98, 182);
             this.downloadWeatherButton.Name = "downloadWeatherButton";
             this.downloadWeatherButton.Size = new System.Drawing.Size(256, 88);
             this.downloadWeatherButton.TabIndex = 0;
@@ -62,7 +68,7 @@
             // createDocButton
             // 
             this.createDocButton.Enabled = false;
-            this.createDocButton.Location = new System.Drawing.Point(461, 182);
+            this.createDocButton.Location = new System.Drawing.Point(384, 182);
             this.createDocButton.Name = "createDocButton";
             this.createDocButton.Size = new System.Drawing.Size(256, 88);
             this.createDocButton.TabIndex = 2;
@@ -94,7 +100,7 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(16, 32);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(520, 20);
+            this.label2.Size = new System.Drawing.Size(553, 20);
             this.label2.TabIndex = 5;
             this.label2.Text = "1. Нажмите кнопку \"Скачать\" для скачивания данных о погоде из источников.";
             // 
@@ -136,11 +142,72 @@
             this.label5.Text = "Количество дней, на которое будет составлен прогноз.";
             this.label5.UseWaitCursor = true;
             // 
+            // dataSourceGroupBox
+            // 
+            this.dataSourceGroupBox.Controls.Add(this.yrCheckBox);
+            this.dataSourceGroupBox.Controls.Add(this.ventuskyCheckBox);
+            this.dataSourceGroupBox.Controls.Add(this.gismeteoCheckBox);
+            this.dataSourceGroupBox.Controls.Add(this.gidroMCCheckBox);
+            this.dataSourceGroupBox.Location = new System.Drawing.Point(716, 109);
+            this.dataSourceGroupBox.Name = "dataSourceGroupBox";
+            this.dataSourceGroupBox.Size = new System.Drawing.Size(170, 161);
+            this.dataSourceGroupBox.TabIndex = 10;
+            this.dataSourceGroupBox.TabStop = false;
+            this.dataSourceGroupBox.Text = "Источники данных";
+            // 
+            // yrCheckBox
+            // 
+            this.yrCheckBox.AutoSize = true;
+            this.yrCheckBox.Checked = true;
+            this.yrCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.yrCheckBox.Location = new System.Drawing.Point(13, 116);
+            this.yrCheckBox.Name = "yrCheckBox";
+            this.yrCheckBox.Size = new System.Drawing.Size(43, 24);
+            this.yrCheckBox.TabIndex = 3;
+            this.yrCheckBox.Text = "Yr";
+            this.yrCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // ventuskyCheckBox
+            // 
+            this.ventuskyCheckBox.AutoSize = true;
+            this.ventuskyCheckBox.Enabled = false;
+            this.ventuskyCheckBox.Location = new System.Drawing.Point(13, 86);
+            this.ventuskyCheckBox.Name = "ventuskyCheckBox";
+            this.ventuskyCheckBox.Size = new System.Drawing.Size(88, 24);
+            this.ventuskyCheckBox.TabIndex = 2;
+            this.ventuskyCheckBox.Text = "Ventusky";
+            this.ventuskyCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // gismeteoCheckBox
+            // 
+            this.gismeteoCheckBox.AutoSize = true;
+            this.gismeteoCheckBox.Checked = true;
+            this.gismeteoCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.gismeteoCheckBox.Location = new System.Drawing.Point(13, 56);
+            this.gismeteoCheckBox.Name = "gismeteoCheckBox";
+            this.gismeteoCheckBox.Size = new System.Drawing.Size(94, 24);
+            this.gismeteoCheckBox.TabIndex = 1;
+            this.gismeteoCheckBox.Text = "Gismeteo";
+            this.gismeteoCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // gidroMCCheckBox
+            // 
+            this.gidroMCCheckBox.AutoSize = true;
+            this.gidroMCCheckBox.Checked = true;
+            this.gidroMCCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.gidroMCCheckBox.Location = new System.Drawing.Point(13, 26);
+            this.gidroMCCheckBox.Name = "gidroMCCheckBox";
+            this.gidroMCCheckBox.Size = new System.Drawing.Size(139, 24);
+            this.gidroMCCheckBox.TabIndex = 0;
+            this.gidroMCCheckBox.Text = "Гидрометцентр";
+            this.gidroMCCheckBox.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(898, 344);
+            this.Controls.Add(this.dataSourceGroupBox);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.numberForecastDaysComboBox);
             this.Controls.Add(this.label4);
@@ -153,7 +220,9 @@
             this.Controls.Add(this.downloadWeatherButton);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
-            this.Text = "Собиратель Погоды 2.0.3";
+            this.Text = "Собиратель Погоды 2.0.4";
+            this.dataSourceGroupBox.ResumeLayout(false);
+            this.dataSourceGroupBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -171,5 +240,10 @@
         private Label label4;
         private ComboBox numberForecastDaysComboBox;
         private Label label5;
+        private GroupBox dataSourceGroupBox;
+        private CheckBox yrCheckBox;
+        private CheckBox ventuskyCheckBox;
+        private CheckBox gismeteoCheckBox;
+        private CheckBox gidroMCCheckBox;
     }
 }
