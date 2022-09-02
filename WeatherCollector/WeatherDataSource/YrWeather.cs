@@ -19,9 +19,27 @@ namespace WeatherCollector.WeatherDataSource
         };
         public bool IsDivideDayNight => false;
 
+        private string GetIdByStation(string station)
+        {
+            if (station == StationList[0])
+            {
+                return "496012";
+            }
+            else if (station == StationList[1])
+            {
+                return "520555";
+            }
+            else if (station == StationList[2])
+            {
+                return "470444";
+            }
+
+            return "0";
+        }
+
         public string GetUrl(string station)
         {
-            return "https://www.yr.no/en/forecast/daily-table/2-496012/Russia/Nizhny%20Novgorod%20Oblast/" + station;
+            return "https://www.yr.no/en/forecast/daily-table/2-" + GetIdByStation(station) + "/Russia/Nizhny%20Novgorod%20Oblast/" + station;
         }
 
         public void FindTemperature(string source, WeekWeather currentWeekWeather)
