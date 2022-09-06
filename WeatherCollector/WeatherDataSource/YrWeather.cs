@@ -67,7 +67,7 @@ namespace WeatherCollector.WeatherDataSource
             var precipitationParametrs = WeatherProvider.FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
             for (var dayCount = 0; dayCount < dataAmount; dayCount++)
             {
-                currentWeekWeather.SetPrecipitation(precipitationParametrs[dayCount], dayCount, WeekWeather.TimeOfDay.Night);
+                currentWeekWeather.SetPrecipitation(precipitationParametrs[dayCount].Replace('.', ','), dayCount, WeekWeather.TimeOfDay.Night);
             }
         }
 

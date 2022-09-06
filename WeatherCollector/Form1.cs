@@ -231,19 +231,19 @@ namespace WeatherCollector
             var stepBetweenTabels = 2;
             if (gidroMCCheckBox.Checked)
             {
-                currentCol = CreateTabel(excelApp, currentCol, gidroMCoWeatherDict, gidroMCWeather, "Гидрометцентр");
+                currentCol = CreateTabel(excelApp, currentCol, gidroMCoWeatherDict, gidroMCWeather, "Гидрометцентр") + stepBetweenTabels;
             }
             if (gismeteoCheckBox.Checked)
             {
-                currentCol = CreateTabel(excelApp, currentCol + stepBetweenTabels, gismeteoWeatherDict, gismeteoWeather, "Gismeteo");
+                currentCol = CreateTabel(excelApp, currentCol, gismeteoWeatherDict, gismeteoWeather, "Gismeteo") + stepBetweenTabels;
             }
             if (ventuskyCheckBox.Checked)
             {
-                currentCol = CreateTabel(excelApp, currentCol + stepBetweenTabels, ventuskyWeatherDict, ventuskyWeather, "Ventusky");
+                currentCol = CreateTabel(excelApp, currentCol, ventuskyWeatherDict, ventuskyWeather, "Ventusky") + stepBetweenTabels;
             }
             if (yrCheckBox.Checked)
             {
-                _ = CreateTabel(excelApp, currentCol + stepBetweenTabels, yrWeatherDict, yrWeather, "Yr");
+                _ = CreateTabel(excelApp, currentCol, yrWeatherDict, yrWeather, "Yr") + stepBetweenTabels;
             }
         }
 
