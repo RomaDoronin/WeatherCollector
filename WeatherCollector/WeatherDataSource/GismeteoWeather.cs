@@ -31,13 +31,14 @@ namespace WeatherCollector.WeatherDataSource
             for (int count = 1; count < temperatureParametrs.Count; count++)
             {
                 var dayIndex = (count + 1) / 2;
+                var temperature = temperatureParametrs[count].Replace("&minus;", "-");
                 switch (count % 2)
                 {
                     case 0:
-                        currentWeekWeather.SetTemperature(temperatureParametrs[count], dayIndex, WeekWeather.TimeOfDay.Day);
+                        currentWeekWeather.SetTemperature(temperature, dayIndex, WeekWeather.TimeOfDay.Day);
                         break;
                     case 1:
-                        currentWeekWeather.SetTemperature(temperatureParametrs[count], dayIndex, WeekWeather.TimeOfDay.Night);
+                        currentWeekWeather.SetTemperature(temperature, dayIndex, WeekWeather.TimeOfDay.Night);
                         break;
                 }
             }
