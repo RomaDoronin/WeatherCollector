@@ -73,8 +73,8 @@ namespace WeatherCollector.WeatherDataSource
         public void FindWindSpeed(string source, WeekWeather currentWeekWeather)
         {
             var commonKeyForParametr = "widget-row-wind-speed\"";
-            var beginKeys = new List<string>() { "unit_wind_m_s\">\n", "unit_wind_m_s warning\">\n" };
-            var endKey = '\n';
+            var beginKeys = new List<string>() { "wind-unit unit unit_wind_m_s\">" };
+            var endKey = '<';
             var dataAmount = WeatherProvider.numberForecastDaysMax + 1;
             var precipitationParametrs = WeatherProvider.FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
             for (int count = 0; count < precipitationParametrs.Count; count++)
