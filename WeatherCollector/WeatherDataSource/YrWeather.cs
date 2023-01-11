@@ -53,6 +53,10 @@ namespace WeatherCollector.WeatherDataSource
 
             var dayTemperatureParametrs = WeatherProvider.FindParametrs(source, commonKeyForParametr, dayBeginKeys, endKey, dataAmount);
             var nightTemperatureParametrs = WeatherProvider.FindParametrs(source, commonKeyForParametr, nightBeginKeys, endKey, dataAmount);
+            if (dayTemperatureParametrs.Count != dataAmount || nightTemperatureParametrs.Count != dataAmount)
+            {
+                return;
+            }
             for (var dayCount = 0; dayCount < dataAmount; dayCount++)
             {
                 currentWeekWeather.SetTemperature(dayTemperatureParametrs[dayCount], dayCount, WeekWeather.TimeOfDay.Day);
@@ -63,10 +67,14 @@ namespace WeatherCollector.WeatherDataSource
         public void FindPrecipitation(string source, WeekWeather currentWeekWeather)
         {
             var commonKeyForParametr = "daily-weather-list__intervals";
-            var beginKeys = new List<string>() { "precipitation__value\">" };
+            var beginKeys = new List<string>() { "<span>" };
             var endKey = '<';
 
             var precipitationParametrs = WeatherProvider.FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
+            if (precipitationParametrs.Count != dataAmount)
+            {
+                return;
+            }
             for (var dayCount = 0; dayCount < dataAmount; dayCount++)
             {
                 currentWeekWeather.SetPrecipitation(precipitationParametrs[dayCount].Replace('.', ','), dayCount, WeekWeather.TimeOfDay.Night);
@@ -82,6 +90,10 @@ namespace WeatherCollector.WeatherDataSource
             var endKey = '<';
 
             var speedParametrs = WeatherProvider.FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
+            if (speedParametrs.Count != dataAmount)
+            {
+                return;
+            }
             for (var dayCount = 0; dayCount < dataAmount; dayCount++)
             {
                 currentWeekWeather.SetWindSpeed(speedParametrs[dayCount], dayCount, WeekWeather.TimeOfDay.Night);
