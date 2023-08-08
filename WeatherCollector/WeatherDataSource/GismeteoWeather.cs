@@ -26,8 +26,10 @@ namespace WeatherCollector.WeatherDataSource
             var commonKeyForParametr = "widget-row-chart widget-row-chart-temperature";
             var beginKeys = new List<string>() { "unit_temperature_c\">" };
             var endKey = '<';
-            var dataAmount = (WeatherProvider.numberForecastDaysMax + 1) * 2;
+            var extraCelsius = 1;
+            var dataAmount = (WeatherProvider.numberForecastDaysMax + 1) * 2 + extraCelsius;
             var temperatureParametrs = WeatherProvider.FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
+            temperatureParametrs.RemoveAt(0);
             for (int count = 1; count < temperatureParametrs.Count; count++)
             {
                 var dayIndex = (count + 1) / 2;
@@ -46,7 +48,7 @@ namespace WeatherCollector.WeatherDataSource
 
         public void FindPrecipitation(string source, WeekWeather currentWeekWeather)
         {
-            var commonKeyForParametr = "Осадки, мм";
+            var commonKeyForParametr = "Осадки в жидком эквиваленте";
             var beginKeys = new List<string>() { "item-unit unit-blue\">", "item-unit\">" };
             var endKey = '<';
             var dataAmount = WeatherProvider.numberForecastDaysMax + 1;
@@ -72,7 +74,7 @@ namespace WeatherCollector.WeatherDataSource
 
         public void FindWindSpeed(string source, WeekWeather currentWeekWeather)
         {
-            var commonKeyForParametr = "widget-row-wind-speed\"";
+            var commonKeyForParametr = "widget-row-wind-speed";
             var beginKeys = new List<string>() { "wind-unit unit unit_wind_m_s\">" };
             var endKey = '<';
             var dataAmount = WeatherProvider.numberForecastDaysMax + 1;
