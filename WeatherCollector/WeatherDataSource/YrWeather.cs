@@ -42,13 +42,13 @@ namespace WeatherCollector.WeatherDataSource
             return "https://www.yr.no/en/forecast/daily-table/2-" + GetIdByStation(station) + "/Russia/Nizhny%20Novgorod%20Oblast/" + station;
         }
 
-        // https://www.yr.no/en/forecast/daily-table/2-520555/Russia/Nizhny%20Novgorod%20Oblast/Nizhny%20Novgorod
+        //  https://www.yr.no/en/forecast/daily-table/2-520555/Russia/Nizhny%20Novgorod%20Oblast/Nizhny%20Novgorod
 
         public void FindTemperature(string source, WeekWeather currentWeekWeather)
         {
             var commonKeyForParametr = "daily-weather-list__intervals";
-            var dayBeginKeys = new List<string>() { "max temperature--warm\" role=\"text\">", "max temperature--cold\" role=\"text\">" };
-            var nightBeginKeys = new List<string>() { "min temperature--warm\" role=\"text\">", "min temperature--cold\" role=\"text\">" };
+            var dayBeginKeys = new List<string>() { "max temperature--warm-primary\" role=\"text\">", "max temperature--cold-primary\" role=\"text\">" };
+            var nightBeginKeys = new List<string>() { "min temperature--warm-primary\" role=\"text\">", "min temperature--cold-primary\" role=\"text\">" };
             var endKey = '<';
 
             var dayTemperatureParametrs = WeatherProvider.FindParametrs(source, commonKeyForParametr, dayBeginKeys, endKey, dataAmount);
