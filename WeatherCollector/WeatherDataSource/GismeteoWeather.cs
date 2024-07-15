@@ -23,9 +23,9 @@ namespace WeatherCollector.WeatherDataSource
 
         public void FindTemperature(string source, WeekWeather currentWeekWeather)
         {
-            var commonKeyForParametr = "widget-row-chart widget-row-chart-temperature";
-            var beginKeys = new List<string>() { "unit_temperature_c\">" };
-            var endKey = '<';
+            var commonKeyForParametr = "widget-row-chart widget-row-chart-temperature-air";
+            var beginKeys = new List<string>() { "temperature-value value=\"" };
+            var endKey = '\"';
             var extraCelsius = 1;
             var dataAmount = (WeatherProvider.numberForecastDaysMax + 1) * 2 + extraCelsius;
             var temperatureParametrs = WeatherProvider.FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
@@ -61,7 +61,7 @@ namespace WeatherCollector.WeatherDataSource
 
         public void FindWindDirection(string source, WeekWeather currentWeekWeather)
         {
-            var commonKeyForParametr = "widget-row-wind-direction";
+            var commonKeyForParametr = "row-wind-direction";
             var beginKeys = new List<string>() { "\"direction\">" };
             var endKey = '<';
             var dataAmount = WeatherProvider.numberForecastDaysMax + 1;
@@ -74,9 +74,9 @@ namespace WeatherCollector.WeatherDataSource
 
         public void FindWindSpeed(string source, WeekWeather currentWeekWeather)
         {
-            var commonKeyForParametr = "widget-row-wind-speed";
-            var beginKeys = new List<string>() { "wind-unit unit unit_wind_m_s\">" };
-            var endKey = '<';
+            var commonKeyForParametr = "row-wind-speed";
+            var beginKeys = new List<string>() { "speed-value value=\"" };
+            var endKey = '\"';
             var dataAmount = WeatherProvider.numberForecastDaysMax + 1;
             var precipitationParametrs = WeatherProvider.FindParametrs(source, commonKeyForParametr, beginKeys, endKey, dataAmount);
             for (int count = 0; count < precipitationParametrs.Count; count++)
