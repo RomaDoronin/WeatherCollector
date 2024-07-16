@@ -37,10 +37,10 @@ namespace WeatherCollector.WeatherDataSource
                 switch (count % 2)
                 {
                     case 0:
-                        currentWeekWeather.SetTemperature(temperature, dayIndex, WeekWeather.TimeOfDay.Day);
+                        currentWeekWeather.SetTemperature(temperature, dayIndex, WeekWeather.TimeOfDay.Night);
                         break;
                     case 1:
-                        currentWeekWeather.SetTemperature(temperature, dayIndex, WeekWeather.TimeOfDay.Night);
+                        currentWeekWeather.SetTemperature(temperature, dayIndex, WeekWeather.TimeOfDay.Day);
                         break;
                 }
             }
