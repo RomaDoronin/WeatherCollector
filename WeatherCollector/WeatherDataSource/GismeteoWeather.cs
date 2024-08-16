@@ -46,7 +46,7 @@ namespace WeatherCollector.WeatherDataSource
             }
         }
 
-        public void FindPrecipitation(string source, WeekWeather currentWeekWeather)
+        public void FindPrecipitation(string source, ref WeekWeather currentWeekWeather)
         {
             var commonKeyForParametr = "Осадки в жидком эквиваленте";
             var beginKeys = new List<string>() { "item-unit unit-blue\">", "item-unit\">" };

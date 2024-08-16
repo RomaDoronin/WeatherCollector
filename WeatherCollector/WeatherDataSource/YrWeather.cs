@@ -64,7 +64,7 @@ namespace WeatherCollector.WeatherDataSource
             }
         }
 
-        public void FindPrecipitation(string source, WeekWeather currentWeekWeather)
+        public void FindPrecipitation(string source, ref WeekWeather currentWeekWeather)
         {
             var commonKeyForParametr = "daily-weather-list__intervals";
             var beginKeys = new List<string>() { "<span>" };

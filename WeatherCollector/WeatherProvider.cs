@@ -14,7 +14,7 @@ namespace WeatherCollector
 
         string GetUrl(string station);
         void FindTemperature(string source, WeekWeather currentWeekWeather);
-        void FindPrecipitation(string source, WeekWeather currentWeekWeather);
+        void FindPrecipitation(string source, ref WeekWeather currentWeekWeather);
         void FindWindDirection(string source, WeekWeather currentWeekWeather);
         void FindWindSpeed(string source, WeekWeather currentWeekWeather);
     }
@@ -89,7 +89,7 @@ namespace WeatherCollector
             Logs.WriteLine("ParseHtmlString - FindTemperature");
             dataSource.FindTemperature(source, currentWeekWeather);
             Logs.WriteLine("ParseHtmlString - FindPrecipitation");
-            dataSource.FindPrecipitation(source, currentWeekWeather);
+            dataSource.FindPrecipitation(source, ref currentWeekWeather);
             Logs.WriteLine("ParseHtmlString - FindWindDirection");
             dataSource.FindWindDirection(source, currentWeekWeather);
             Logs.WriteLine("ParseHtmlString - FindWindSpeed");

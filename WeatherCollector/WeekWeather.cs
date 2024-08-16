@@ -9,6 +9,23 @@
         }
 
         public List<DayWeather> week;
+        private string precipitationHeader = "Осадки, мм";
+        public string PrecipitationHeader
+        {
+            get
+            {
+                Console.WriteLine("get");
+                Console.WriteLine(precipitationHeader);
+                return precipitationHeader;
+            }
+            set
+            {
+                Console.WriteLine("set");
+                Console.WriteLine(precipitationHeader);
+                Console.WriteLine(value);
+                precipitationHeader = value;
+            }
+        }
 
         public WeekWeather()
         {

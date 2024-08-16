@@ -23,7 +23,7 @@ namespace WeatherCollector.WeatherDataSource
             "vyksa",
             "lukojanov"
         };
-        public bool IsDivideDayNight => true;
+        public bool IsDivideDayNight => true; // https://meteoinfo.ru/forecasts5000/russia/nizhegorodskaya-area/sakunja
 
         public string GetUrl(string station)
         {
@@ -72,67 +72,90 @@ namespace WeatherCollector.WeatherDataSource
             }
         }
 
-        public void FindPrecipitation(string source, WeekWeather currentWeekWeather)
+        public void FindPrecipitation(string source, ref WeekWeather currentWeekWeather)
         {
-            var key = "Осадки, мм (вероятность)";
+            var key = "Осадки, вероятность<";
             int dayCount = 0;
             var findDayPrecipitation = FindState.NotFind;
             var findNightPrecipitation = FindState.NotFind;
+            currentWeekWeather.PrecipitationHeader = "Вероятность осадков";
+
+            var findPersent = FindState.NotFind;
 
             for (int i = 0; i < source.Length - key.Length; i++)
             {
                 if (findDayPrecipitation == FindState.Finding || findNightPrecipitation == FindState.Finding)
                 {
-                    var nobrKey = "<nobr>";
-                    if (WeatherProvider.CollectSubstring(nobrKey, source, i))
+                    string precipitation = "";
+                    var persentKey = "";
+                    if (findDayPrecipitation == FindState.Finding)
                     {
-                        int startIndex = i + nobrKey.Length;
-                        string precipitation = "";
-                        char ch = source[startIndex];
-                        int count = 0;
-                        while (ch != '<' && ch != ')')
-                        {
-                            if (ch == '.')
-                            {
-                                precipitation += ',';
-                            }
-                            else
-                            {
-                                precipitation += ch;
-                            }
-                            count++;
-                            ch = source[startIndex + count];
-                        }
+                        persentKey = "fc_small_gorizont_ww\">";
+                    } else if (findNightPrecipitation == FindState.Finding)
+                    {
+                        persentKey = "fc_small_gorizont_ww sdvig_div\">";
+                    }
 
-                        if (precipitation.EndsWith('%'))
+                    if (findPersent == FindState.Finding)
+                    {
+                        var nobrKey = "<nobr>";
+                        if (WeatherProvider.CollectSubstring(nobrKey, source, i))
                         {
-                            continue;
+                            int startIndex = i + nobrKey.Length;
+                            char ch = source[startIndex];
+                            int count = 0;
+                            while (ch != '<' && ch != ')')
+                            {
+                                if (ch == '.')
+                                {
+                                    precipitation += ',';
+                                }
+                                else
+                                {
+                                    precipitation += ch;
+                                }
+                                count++;
+                                ch = source[startIndex + count];
+                            }
+                            findPersent = FindState.NotFind;
+                        }
+                    }
+                    else if (WeatherProvider.CollectSubstring(persentKey, source, i))
+                    {
+                        if (source[i + persentKey.Length] == '0')
+                        {
+                            precipitation = "0%";
                         }
                         else
                         {
+                            findPersent = FindState.Finding;
+                        }
+                    }
+
+                    if (precipitation.Length > 0)
+                    {
+                        if (findDayPrecipitation == FindState.Finding)
+                        {
+                            currentWeekWeather.SetPrecipitation(precipitation, dayCount, WeekWeather.TimeOfDay.Day);
+                        }
+                        else if (findNightPrecipitation == FindState.Finding)
+                        {
+                            currentWeekWeather.SetPrecipitation(precipitation, dayCount, WeekWeather.TimeOfDay.Night);
+                        }
+                        if (dayCount == WeatherProvider.numberForecastDaysMax)
+                        {
                             if (findDayPrecipitation == FindState.Finding)
                             {
-                                currentWeekWeather.SetPrecipitation(precipitation, dayCount, WeekWeather.TimeOfDay.Day);
+                                findDayPrecipitation = FindState.Found;
                             }
                             else if (findNightPrecipitation == FindState.Finding)
                             {
-                                currentWeekWeather.SetPrecipitation(precipitation, dayCount, WeekWeather.TimeOfDay.Night);
+                                findNightPrecipitation = FindState.Found;
                             }
-                            if (dayCount == WeatherProvider.numberForecastDaysMax)
-                            {
-                                if (findDayPrecipitation == FindState.Finding)
-                                {
-                                    findDayPrecipitation = FindState.Found;
-                                }
-                                else if (findNightPrecipitation == FindState.Finding)
-                                {
-                                    findNightPrecipitation = FindState.Found;
-                                }
-                                dayCount = 1;
-                                continue;
-                            }
-                            dayCount++;
+                            dayCount = 1;
+                            continue;
                         }
+                        dayCount++;
                     }
                 }
                 else if (WeatherProvider.CollectSubstring(key, source, i))

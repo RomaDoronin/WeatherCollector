@@ -282,7 +282,7 @@ namespace WeatherCollector
         private void FillDoc(CreateExcelDoc excelApp, int startedRow, int stationCount, string localizedStataion, WeekWeather weekWeather)
         {
             int temperatureRow, precipitationRow, windRow;
-            FillParametrHeader(excelApp, startedRow, stationCount, out temperatureRow, out precipitationRow, out windRow);
+            FillParametrHeader(excelApp, startedRow, stationCount, out temperatureRow, out precipitationRow, out windRow, weekWeather.PrecipitationHeader);
 
             var colStart = 4;
 
@@ -332,13 +332,14 @@ namespace WeatherCollector
             }
         }
 
-        private static void FillParametrHeader(CreateExcelDoc excelApp, int startedRow, int stationCount, out int temperatureRow, out int precipitationRow, out int windRow)
+        private static void FillParametrHeader(CreateExcelDoc excelApp, int startedRow, int stationCount, out int temperatureRow, out int precipitationRow, out int windRow, string precipitationHeader)
         {
             temperatureRow = startedRow + 2 + stationCount * 3;
             excelApp.AddData(3, temperatureRow, "Температура, °C");
 
             precipitationRow = startedRow + 3 + stationCount * 3;
-            excelApp.AddData(3, precipitationRow, "Осадки, мм");
+            //excelApp.AddData(3, precipitationRow, "Осадки, мм");
+            excelApp.AddData(3, precipitationRow, precipitationHeader);
 
             windRow = startedRow + 4 + stationCount * 3;
             excelApp.AddData(3, windRow, "Ветер, м/с");
@@ -407,7 +408,7 @@ namespace WeatherCollector
         private void SetColumnWidth(CreateExcelDoc excelApp)
         {
             excelApp.SetColumnWidth(2, 22);
-            excelApp.SetColumnWidth(3, 15);
+            excelApp.SetColumnWidth(3, 19);
         }
     }
 }
