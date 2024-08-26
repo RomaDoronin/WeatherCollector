@@ -79,6 +79,7 @@ namespace WeatherCollector.WeatherDataSource
             var findDayPrecipitation = FindState.NotFind;
             var findNightPrecipitation = FindState.NotFind;
             currentWeekWeather.PrecipitationHeader = "Вероятность осадков";
+            var keyNotFound = true;
 
             var findPersent = FindState.NotFind;
 
@@ -160,6 +161,7 @@ namespace WeatherCollector.WeatherDataSource
                 }
                 else if (WeatherProvider.CollectSubstring(key, source, i))
                 {
+                    keyNotFound = false;
                     if (findDayPrecipitation == FindState.NotFind)
                     {
                         findDayPrecipitation = FindState.Finding;
@@ -168,6 +170,16 @@ namespace WeatherCollector.WeatherDataSource
                     {
                         findNightPrecipitation = FindState.Finding;
                     }
+                }
+            }
+            if (keyNotFound)
+            {
+                while (dayCount <= WeatherProvider.numberForecastDaysMax)
+                {
+                    var precipitation = "0%";
+                    currentWeekWeather.SetPrecipitation(precipitation, dayCount, WeekWeather.TimeOfDay.Day);
+                    currentWeekWeather.SetPrecipitation(precipitation, dayCount, WeekWeather.TimeOfDay.Night);
+                    dayCount++;
                 }
             }
         }
