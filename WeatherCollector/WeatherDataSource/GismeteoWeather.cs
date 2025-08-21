@@ -10,9 +10,9 @@ namespace WeatherCollector.WeatherDataSource
     {
         public List<string> StationList => new List<string>()
         {
-            //"shakhunya-4322",
+            "shakhunya-4322",
             "nizhny-novgorod-4355",
-            //"vyksa-4375"
+            "vyksa-4375"
         };
         public bool IsDivideDayNight => false;
 
