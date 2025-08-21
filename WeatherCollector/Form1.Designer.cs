@@ -29,201 +29,199 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.downloadWeatherButton = new System.Windows.Forms.Button();
-            this.progressBar = new System.Windows.Forms.ProgressBar();
-            this.createDocButton = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.numberForecastDaysComboBox = new System.Windows.Forms.ComboBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.dataSourceGroupBox = new System.Windows.Forms.GroupBox();
-            this.yrCheckBox = new System.Windows.Forms.CheckBox();
-            this.ventuskyCheckBox = new System.Windows.Forms.CheckBox();
-            this.gismeteoCheckBox = new System.Windows.Forms.CheckBox();
-            this.gidroMCCheckBox = new System.Windows.Forms.CheckBox();
-            this.dataSourceGroupBox.SuspendLayout();
-            this.SuspendLayout();
+            downloadWeatherButton = new Button();
+            progressBar = new ProgressBar();
+            createDocButton = new Button();
+            button3 = new Button();
+            label1 = new Label();
+            label2 = new Label();
+            label3 = new Label();
+            label4 = new Label();
+            numberForecastDaysComboBox = new ComboBox();
+            label5 = new Label();
+            dataSourceGroupBox = new GroupBox();
+            yrCheckBox = new CheckBox();
+            ventuskyCheckBox = new CheckBox();
+            gismeteoCheckBox = new CheckBox();
+            gidroMCCheckBox = new CheckBox();
+            dataSourceGroupBox.SuspendLayout();
+            SuspendLayout();
             // 
             // downloadWeatherButton
             // 
-            this.downloadWeatherButton.Location = new System.Drawing.Point(98, 182);
-            this.downloadWeatherButton.Name = "downloadWeatherButton";
-            this.downloadWeatherButton.Size = new System.Drawing.Size(256, 88);
-            this.downloadWeatherButton.TabIndex = 0;
-            this.downloadWeatherButton.Text = "Скачать";
-            this.downloadWeatherButton.UseVisualStyleBackColor = true;
-            this.downloadWeatherButton.Click += new System.EventHandler(this.downloadWeatherButton_Click);
+            downloadWeatherButton.Location = new Point(98, 182);
+            downloadWeatherButton.Name = "downloadWeatherButton";
+            downloadWeatherButton.Size = new Size(256, 88);
+            downloadWeatherButton.TabIndex = 0;
+            downloadWeatherButton.Text = "Скачать";
+            downloadWeatherButton.UseVisualStyleBackColor = true;
+            downloadWeatherButton.Click += downloadWeatherButton_Click;
             // 
             // progressBar
             // 
-            this.progressBar.Location = new System.Drawing.Point(16, 303);
-            this.progressBar.Maximum = 140;
-            this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(870, 29);
-            this.progressBar.TabIndex = 1;
+            progressBar.Location = new Point(16, 303);
+            progressBar.Maximum = 140;
+            progressBar.Name = "progressBar";
+            progressBar.Size = new Size(870, 29);
+            progressBar.TabIndex = 1;
             // 
             // createDocButton
             // 
-            this.createDocButton.Enabled = false;
-            this.createDocButton.Location = new System.Drawing.Point(384, 182);
-            this.createDocButton.Name = "createDocButton";
-            this.createDocButton.Size = new System.Drawing.Size(256, 88);
-            this.createDocButton.TabIndex = 2;
-            this.createDocButton.Text = "Сформировать таблицу";
-            this.createDocButton.UseVisualStyleBackColor = true;
-            this.createDocButton.Click += new System.EventHandler(this.createDocButton_Click);
+            createDocButton.Enabled = false;
+            createDocButton.Location = new Point(384, 182);
+            createDocButton.Name = "createDocButton";
+            createDocButton.Size = new Size(256, 88);
+            createDocButton.TabIndex = 2;
+            createDocButton.Text = "Сформировать таблицу";
+            createDocButton.UseVisualStyleBackColor = true;
+            createDocButton.Click += createDocButton_Click;
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(767, 12);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(119, 29);
-            this.button3.TabIndex = 3;
-            this.button3.Text = "Информация";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            button3.Location = new Point(767, 12);
+            button3.Name = "button3";
+            button3.Size = new Size(119, 29);
+            button3.TabIndex = 3;
+            button3.Text = "Информация";
+            button3.UseVisualStyleBackColor = true;
+            button3.Click += button3_Click;
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(94, 20);
-            this.label1.TabIndex = 4;
-            this.label1.Text = "Инструкция:";
+            label1.AutoSize = true;
+            label1.Location = new Point(12, 9);
+            label1.Name = "label1";
+            label1.Size = new Size(94, 20);
+            label1.TabIndex = 4;
+            label1.Text = "Инструкция:";
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(16, 32);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(553, 20);
-            this.label2.TabIndex = 5;
-            this.label2.Text = "1. Нажмите кнопку \"Скачать\" для скачивания данных о погоде из источников.";
+            label2.AutoSize = true;
+            label2.Location = new Point(16, 32);
+            label2.Name = "label2";
+            label2.Size = new Size(553, 20);
+            label2.TabIndex = 5;
+            label2.Text = "1. Нажмите кнопку \"Скачать\" для скачивания данных о погоде из источников.";
             // 
             // label3
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(16, 52);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(754, 20);
-            this.label3.TabIndex = 6;
-            this.label3.Text = "2. Дождитесь скачивания. Как только данные скачаются, станет доступна кнопка \"Сфо" +
-    "рмировать таблицу\".";
+            label3.AutoSize = true;
+            label3.Location = new Point(16, 52);
+            label3.Name = "label3";
+            label3.Size = new Size(754, 20);
+            label3.TabIndex = 6;
+            label3.Text = "2. Дождитесь скачивания. Как только данные скачаются, станет доступна кнопка \"Сформировать таблицу\".";
             // 
             // label4
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(16, 72);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(712, 20);
-            this.label4.TabIndex = 7;
-            this.label4.Text = "3. Нажмите кнопку \"Сформировать таблицу\" для формирования Excel таблицы с данными" +
-    " о погоде.";
+            label4.AutoSize = true;
+            label4.Location = new Point(16, 72);
+            label4.Name = "label4";
+            label4.Size = new Size(712, 20);
+            label4.TabIndex = 7;
+            label4.Text = "3. Нажмите кнопку \"Сформировать таблицу\" для формирования Excel таблицы с данными о погоде.";
             // 
             // numberForecastDaysComboBox
             // 
-            this.numberForecastDaysComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.numberForecastDaysComboBox.Location = new System.Drawing.Point(416, 109);
-            this.numberForecastDaysComboBox.Name = "numberForecastDaysComboBox";
-            this.numberForecastDaysComboBox.Size = new System.Drawing.Size(40, 28);
-            this.numberForecastDaysComboBox.TabIndex = 8;
+            numberForecastDaysComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            numberForecastDaysComboBox.Location = new Point(416, 109);
+            numberForecastDaysComboBox.Name = "numberForecastDaysComboBox";
+            numberForecastDaysComboBox.Size = new Size(40, 28);
+            numberForecastDaysComboBox.TabIndex = 8;
             // 
             // label5
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(16, 112);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(394, 20);
-            this.label5.TabIndex = 9;
-            this.label5.Text = "Количество дней, на которое будет составлен прогноз.";
-            this.label5.UseWaitCursor = true;
+            label5.AutoSize = true;
+            label5.Location = new Point(16, 112);
+            label5.Name = "label5";
+            label5.Size = new Size(394, 20);
+            label5.TabIndex = 9;
+            label5.Text = "Количество дней, на которое будет составлен прогноз.";
+            label5.UseWaitCursor = true;
             // 
             // dataSourceGroupBox
             // 
-            this.dataSourceGroupBox.Controls.Add(this.yrCheckBox);
-            this.dataSourceGroupBox.Controls.Add(this.ventuskyCheckBox);
-            this.dataSourceGroupBox.Controls.Add(this.gismeteoCheckBox);
-            this.dataSourceGroupBox.Controls.Add(this.gidroMCCheckBox);
-            this.dataSourceGroupBox.Location = new System.Drawing.Point(716, 109);
-            this.dataSourceGroupBox.Name = "dataSourceGroupBox";
-            this.dataSourceGroupBox.Size = new System.Drawing.Size(170, 161);
-            this.dataSourceGroupBox.TabIndex = 10;
-            this.dataSourceGroupBox.TabStop = false;
-            this.dataSourceGroupBox.Text = "Источники данных";
+            dataSourceGroupBox.Controls.Add(yrCheckBox);
+            dataSourceGroupBox.Controls.Add(ventuskyCheckBox);
+            dataSourceGroupBox.Controls.Add(gismeteoCheckBox);
+            dataSourceGroupBox.Controls.Add(gidroMCCheckBox);
+            dataSourceGroupBox.Location = new Point(716, 109);
+            dataSourceGroupBox.Name = "dataSourceGroupBox";
+            dataSourceGroupBox.Size = new Size(170, 161);
+            dataSourceGroupBox.TabIndex = 10;
+            dataSourceGroupBox.TabStop = false;
+            dataSourceGroupBox.Text = "Источники данных";
             // 
             // yrCheckBox
             // 
-            this.yrCheckBox.AutoSize = true;
-            this.yrCheckBox.Checked = true;
-            this.yrCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.yrCheckBox.Location = new System.Drawing.Point(13, 116);
-            this.yrCheckBox.Name = "yrCheckBox";
-            this.yrCheckBox.Size = new System.Drawing.Size(43, 24);
-            this.yrCheckBox.TabIndex = 3;
-            this.yrCheckBox.Text = "Yr";
-            this.yrCheckBox.UseVisualStyleBackColor = true;
+            yrCheckBox.AutoSize = true;
+            yrCheckBox.Checked = true;
+            yrCheckBox.CheckState = CheckState.Checked;
+            yrCheckBox.Location = new Point(13, 116);
+            yrCheckBox.Name = "yrCheckBox";
+            yrCheckBox.Size = new Size(43, 24);
+            yrCheckBox.TabIndex = 3;
+            yrCheckBox.Text = "Yr";
+            yrCheckBox.UseVisualStyleBackColor = true;
             // 
             // ventuskyCheckBox
             // 
-            this.ventuskyCheckBox.AutoSize = true;
-            this.ventuskyCheckBox.Location = new System.Drawing.Point(13, 86);
-            this.ventuskyCheckBox.Name = "ventuskyCheckBox";
-            this.ventuskyCheckBox.Size = new System.Drawing.Size(88, 24);
-            this.ventuskyCheckBox.TabIndex = 2;
-            this.ventuskyCheckBox.Text = "Ventusky";
-            this.ventuskyCheckBox.UseVisualStyleBackColor = true;
+            ventuskyCheckBox.AutoSize = true;
+            ventuskyCheckBox.Location = new Point(13, 86);
+            ventuskyCheckBox.Name = "ventuskyCheckBox";
+            ventuskyCheckBox.Size = new Size(88, 24);
+            ventuskyCheckBox.TabIndex = 2;
+            ventuskyCheckBox.Text = "Ventusky";
+            ventuskyCheckBox.UseVisualStyleBackColor = true;
             // 
             // gismeteoCheckBox
             // 
-            this.gismeteoCheckBox.AutoSize = true;
-            this.gismeteoCheckBox.Checked = true;
-            this.gismeteoCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.gismeteoCheckBox.Location = new System.Drawing.Point(13, 56);
-            this.gismeteoCheckBox.Name = "gismeteoCheckBox";
-            this.gismeteoCheckBox.Size = new System.Drawing.Size(94, 24);
-            this.gismeteoCheckBox.TabIndex = 1;
-            this.gismeteoCheckBox.Text = "Gismeteo";
-            this.gismeteoCheckBox.UseVisualStyleBackColor = true;
+            gismeteoCheckBox.AutoSize = true;
+            gismeteoCheckBox.Checked = true;
+            gismeteoCheckBox.CheckState = CheckState.Checked;
+            gismeteoCheckBox.Location = new Point(13, 56);
+            gismeteoCheckBox.Name = "gismeteoCheckBox";
+            gismeteoCheckBox.Size = new Size(94, 24);
+            gismeteoCheckBox.TabIndex = 1;
+            gismeteoCheckBox.Text = "Gismeteo";
+            gismeteoCheckBox.UseVisualStyleBackColor = true;
             // 
             // gidroMCCheckBox
             // 
-            this.gidroMCCheckBox.AutoSize = true;
-            this.gidroMCCheckBox.Checked = true;
-            this.gidroMCCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.gidroMCCheckBox.Location = new System.Drawing.Point(13, 26);
-            this.gidroMCCheckBox.Name = "gidroMCCheckBox";
-            this.gidroMCCheckBox.Size = new System.Drawing.Size(139, 24);
-            this.gidroMCCheckBox.TabIndex = 0;
-            this.gidroMCCheckBox.Text = "Гидрометцентр";
-            this.gidroMCCheckBox.UseVisualStyleBackColor = true;
+            gidroMCCheckBox.AutoSize = true;
+            gidroMCCheckBox.Checked = true;
+            gidroMCCheckBox.CheckState = CheckState.Checked;
+            gidroMCCheckBox.Location = new Point(13, 26);
+            gidroMCCheckBox.Name = "gidroMCCheckBox";
+            gidroMCCheckBox.Size = new Size(139, 24);
+            gidroMCCheckBox.TabIndex = 0;
+            gidroMCCheckBox.Text = "Гидрометцентр";
+            gidroMCCheckBox.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(898, 344);
-            this.Controls.Add(this.dataSourceGroupBox);
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.numberForecastDaysComboBox);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.createDocButton);
-            this.Controls.Add(this.progressBar);
-            this.Controls.Add(this.downloadWeatherButton);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "Form1";
-            this.Text = "Собиратель Погоды 2.2.1";
-            this.dataSourceGroupBox.ResumeLayout(false);
-            this.dataSourceGroupBox.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(898, 344);
+            Controls.Add(dataSourceGroupBox);
+            Controls.Add(label5);
+            Controls.Add(numberForecastDaysComboBox);
+            Controls.Add(label4);
+            Controls.Add(label3);
+            Controls.Add(label2);
+            Controls.Add(label1);
+            Controls.Add(button3);
+            Controls.Add(createDocButton);
+            Controls.Add(progressBar);
+            Controls.Add(downloadWeatherButton);
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            Name = "Form1";
+            Text = "Собиратель Погоды 2.3.0";
+            dataSourceGroupBox.ResumeLayout(false);
+            dataSourceGroupBox.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
 
         }
 
